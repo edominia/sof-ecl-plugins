@@ -29,42 +29,29 @@
 
 package org.sofproject.gst.json;
 
-public class JsonProperty {
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
-	private String name;
-	private String description;
-	private String version;
-	private String type;
-	private String template;
+import org.eclipse.core.runtime.CoreException;
 
-	public JsonProperty(String name, String description, String version, String type) {
-		this.name = name;
-		this.description = description;
-		this.version = version;
-		this.type = type;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class JsonUtils {
+
+	public void serializeJson(JsonProperty jsonProperty, String pipelineString) throws CoreException, IOException {
+		try {
+			File file = new File(jsonProperty.getName() + ".json");
+			jsonProperty.setTemplate(pipelineString);
+			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+			ObjectMapper obj = new ObjectMapper();
+			obj.writeValue(writer, jsonProperty);
+			writer.close();
+
+		} catch (Exception e) {
+			System.out.println(e.toString());
+		}
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public String getTemplate() {
-		return template;
-	}
-
-	public void setTemplate(String newTemplate) {
-		this.template = newTemplate;
-	}
 }

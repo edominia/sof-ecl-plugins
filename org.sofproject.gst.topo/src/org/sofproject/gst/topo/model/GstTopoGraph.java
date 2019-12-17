@@ -64,7 +64,6 @@ import org.sofproject.topo.ui.graph.ITopoNode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 public class GstTopoGraph implements ITopoGraph {
 
 	public static final String[] NODE_TYPE_IDS = { "org.sofproject.gst.topo.element" };
@@ -198,22 +197,8 @@ public class GstTopoGraph implements ITopoGraph {
 
 		fileInput.setContents(new ByteArrayInputStream(os.toByteArray()), true, false, null);
 	}
-	
-	@Override
-	public void serializeJson(JsonProperty jsonProperty) throws CoreException, IOException {
-		try {
-			File file = new File(jsonProperty.getName()+".json");
-			jsonProperty.setTemplate(getPipelineString());
-			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-			ObjectMapper obj = new ObjectMapper();
-			obj.writeValue(writer, jsonProperty);
-			writer.close();
-			
-		}catch(Exception e) {
-			System.out.println(e.toString());
-		}
-	}
 
+	@Override
 	public String getPipelineString() {
 		try {
 			ByteArrayOutputStream os = new ByteArrayOutputStream();

@@ -70,8 +70,8 @@ public interface ITopoGraph {
 	public BinFile getBinTopology();
 
 	public void serialize() throws CoreException, IOException;
-
-	public void serializeJson(JsonProperty jsonProperty) throws CoreException, IOException;
+	
+	public String getPipelineString();
 	
 	public IRemoteOpsProvider getRemoteOpsProvider();
 }

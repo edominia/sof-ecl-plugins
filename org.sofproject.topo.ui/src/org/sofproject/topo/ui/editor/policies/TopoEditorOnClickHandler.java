@@ -138,8 +138,7 @@ public class TopoEditorOnClickHandler extends AbstractHandler implements IOnClic
 					public void handle(ActionEvent event) {
 						
 						menu.hide();
-						JsonCustomOptionPane pane = new JsonCustomOptionPane(null, getGraphFromHost());
-						pane.setVisible(true);
+						new JsonCustomOptionPane(Display.getCurrent(), getGraphFromHost());
 					}
 				});
 				menu.getItems().add(miSerializeJson);

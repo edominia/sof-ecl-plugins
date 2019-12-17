@@ -1,156 +1,169 @@
+/*
+ * Copyright (c) 2018, Intel Corporation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer in the
+ *     documentation and/or other materials provided with the distribution.
+ *   * Neither the name of the Intel Corporation nor the
+ *     names of its contributors may be used to endorse or promote products
+ *     derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 package org.sofproject.gst.json;
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Monitor;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.sofproject.topo.ui.graph.ITopoGraph;
+import org.sofproject.gst.json.JsonUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.sofproject.gst.topo.model.GstTopoGraph;
 
-public class JsonCustomOptionPane extends JDialog
-        implements ActionListener,
-        PropertyChangeListener {
+public class JsonCustomOptionPane {
 
-    private JOptionPane optionPane;
-    private JTextField nameField;
-    private JTextField versionField;
-    private JTextField descriptionField;
-    private JComboBox<String> typeBox;
-    private String btnString1 = "OK";
-    private String btnString2 = "Cancel";
-    private ITopoGraph topoGraph;
+	ITopoGraph graph;
 
-    
-    private static boolean isInteger(String s) {
-        try { 
-            Integer.parseInt(s); 
-        } catch(NumberFormatException e) { 
-            return false; 
-        } catch(NullPointerException e) {
-            return false;
-        }
-        return true;
-    }
+	private static boolean isInteger(String s) {
+		try {
+			Integer.parseInt(s);
+		} catch (NumberFormatException e) {
+			return false;
+		} catch (NullPointerException e) {
+			return false;
+		}
+		return true;
+	}
 
+	public JsonCustomOptionPane(Display display, ITopoGraph graph) {
+		this.graph = graph;
+		Shell shell = new Shell(display, SWT.CLOSE | SWT.TITLE | SWT.MIN);
 
-    public JsonCustomOptionPane(Frame aFrame, ITopoGraph graph) {
-        super(aFrame, true);
+		shell.setText("Serialize JSON");
 
-        topoGraph = graph;
-        setTitle("Serialize Json");
+		GridLayout gridLayout = new GridLayout(4, false);
+		gridLayout.verticalSpacing = 8;
+		shell.setLayout(gridLayout);
 
-		JLabel nameLabel = new JLabel("Name:");
-        nameField = new JTextField("");
-        
-		JLabel versionLabel = new JLabel("Version:");
-        versionField = new JTextField("");
-        
-		JLabel descriptionLabel = new JLabel("Description:");
-        descriptionField = new JTextField("");
-        
-        JLabel typeLabel = new JLabel("Type:");
-        String[] items = {"Gstreamer", "Ffmpeg"};
-        typeBox = new JComboBox<>(items);
-        
-        Object[] array = {nameLabel, nameField, versionLabel, versionField, descriptionLabel, descriptionField, typeLabel, typeBox};
+		new Label(shell, SWT.NULL).setText("Name:");
+		Text nameText = new Text(shell, SWT.SINGLE | SWT.BORDER);
+		GridData nameGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		nameGridData.horizontalSpan = 3;
+		nameText.setLayoutData(nameGridData);
 
-        Object[] options = {btnString1, btnString2};
-        
-        optionPane = new JOptionPane(array,
-                JOptionPane.PLAIN_MESSAGE,
-                JOptionPane.OK_CANCEL_OPTION,
-                null,
-                options,
-                options[0]);
+		new Label(shell, SWT.NULL).setText("Version:");
+		Text versionText = new Text(shell, SWT.BORDER);
+		GridData versionGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		versionGridData.horizontalSpan = 3;
+		versionText.setLayoutData(versionGridData);
 
-        setContentPane(optionPane);
-        setLocationRelativeTo(null);
+		new Label(shell, SWT.NULL).setText("Description:");
+		Text descriptionText = new Text(shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
+		GridData descriptionGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		descriptionGridData.horizontalSpan = 3;
+		descriptionGridData.heightHint = 100;
+		descriptionGridData.widthHint = 200;
+		descriptionText.setLayoutData(descriptionGridData);
 
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		new Label(shell, SWT.NULL).setText("Type:");
+		Combo typeCombo = new Combo(shell, SWT.READ_ONLY);
+		typeCombo.setBounds(50, 50, 200, 65);
+		String items[] = { "Gstreamer", "Ffmpeg" };
+		typeCombo.setItems(items);
+		typeCombo.setText(items[0]);
+		GridData typeGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		typeGridData.horizontalSpan = 3;
+		typeCombo.setLayoutData(typeGridData);
 
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentShown(ComponentEvent ce) {
-                nameField.requestFocusInWindow();
-            }
-        });
+		Button okButton = new Button(shell, SWT.PUSH);
+		okButton.setText("Ok");
+		GridData buttonGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		okButton.setLayoutData(buttonGridData);
+		okButton.addSelectionListener(new SelectionAdapter() {
 
-        nameField.addActionListener(this);
-        versionField.addActionListener(this);
-
-        optionPane.addPropertyChangeListener(this);
-        pack();
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        optionPane.setValue(btnString1);
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent e) {
-        String prop = e.getPropertyName();
-
-        if (isVisible()
-                && (e.getSource() == optionPane)
-                && (JOptionPane.VALUE_PROPERTY.equals(prop)
-                || JOptionPane.INPUT_VALUE_PROPERTY.equals(prop))) {
-            Object value = optionPane.getValue();
-
-            if (value == JOptionPane.UNINITIALIZED_VALUE) {
-                return;
-            }
-
-            optionPane.setValue(
-                    JOptionPane.UNINITIALIZED_VALUE);
-
-            if (btnString1.equals(value)) {
-                if (nameField.getText().isEmpty()) {
-                	//text was invalid
-                	nameField.selectAll();
-                    JOptionPane.showMessageDialog(this,
-                            "Name cannot be empty!",
-                            "",
-                            JOptionPane.ERROR_MESSAGE);
-                    nameField.requestFocusInWindow();
-
-                } 
-                else if (!isInteger(versionField.getText())) {
-                	versionField.selectAll();
-                    JOptionPane.showMessageDialog(this,
-                            "Version number should be an integer!",
-                            "",
-                            JOptionPane.ERROR_MESSAGE);
-                    versionField.requestFocusInWindow();
-                }
-                else {
-                	try {
-	            		JsonProperty jsonProperty = new JsonProperty(nameField.getText(), descriptionField.getText(), versionField.getText(), typeBox.getSelectedItem().toString());
-	            		topoGraph.serializeJson(jsonProperty);
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				if (nameText.getText().isEmpty()) {
+					MessageBox messageBox = new MessageBox(shell, SWT.ERROR);
+					messageBox.setMessage("Name cannot be empty!");
+					messageBox.open();
+				} else if (!isInteger(versionText.getText())) {
+					MessageBox messageBox = new MessageBox(shell, SWT.ERROR);
+					messageBox.setMessage("Version number should be an integer!");
+					messageBox.open();
+				} else {
+					try {
+						JsonProperty jsonProperty = new JsonProperty(nameText.getText(), descriptionText.getText(),
+								versionText.getText(), typeCombo.getItem(typeCombo.getSelectionIndex()));
+						new JsonUtils().serializeJson(jsonProperty, graph.getPipelineString());
+						shell.close();
 					} catch (CoreException | IOException error) {
-						error.printStackTrace(); //TODO:
+						error.printStackTrace(); // TODO:
 					}
-                    exit();
-                }
-            } else {
-            	System.out.println("Json serialize cancelled");
-                exit();
-            }
-        }
-    }
+				}
+			}
+		});
 
-    /**
-     * This method clears the dialog and hides it.
-     */
-    public void exit() {
-        dispose();
-    }
+		Button cancelButton = new Button(shell, SWT.PUSH);
+		cancelButton.setText("Cancel");
+		GridData cancelbuttonGridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
+		cancelButton.setLayoutData(cancelbuttonGridData);
+		cancelButton.addSelectionListener(new SelectionAdapter() {
+
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				shell.close();
+			}
+		});
+
+		Monitor primary = display.getPrimaryMonitor();
+		Rectangle bounds = primary.getBounds();
+		Rectangle rect = shell.getBounds();
+		int x = bounds.x + (bounds.width - rect.width) / 2;
+		int y = bounds.y + (bounds.height - rect.height) / 2;
+		shell.setLocation(x, y);
+
+		shell.pack();
+		shell.open();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch())
+				display.sleep();
+		}
+	}
 
 }
