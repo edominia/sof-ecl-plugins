@@ -11,4 +11,5 @@ Require-Bundle: org.sofproject.core,
  org.sofproject.topo.ui,
  com.jcraft.jsch
 Import-Package: org.eclipse.ui
-Export-Package: org.sofproject.gst.topo.ops
+Export-Package: org.sofproject.gst.topo.model,
+ org.sofproject.gst.topo.ops

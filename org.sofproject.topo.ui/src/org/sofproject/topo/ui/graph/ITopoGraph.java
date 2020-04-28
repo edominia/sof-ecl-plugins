@@ -36,7 +36,7 @@ import java.util.Collection;
 import org.eclipse.core.runtime.CoreException;
 import org.sofproject.core.binfile.BinFile;
 import org.sofproject.core.ops.IRemoteOpsProvider;
-import org.sofproject.topo.ui.json.JsonProperty;
+import org.sofproject.topo.ui.json.PipelineJsonProperty;
 
 /**
  * Topology graph, implemented by a specific topology binding.
@@ -72,6 +72,8 @@ public interface ITopoGraph {
 	public void serialize() throws CoreException, IOException;
 	
 	public String getPipelineString();
+	
+	public String getPipelinePropertiesString();
 	
 	public IRemoteOpsProvider getRemoteOpsProvider();
 }

@@ -72,7 +72,7 @@ public class JsonCustomOptionPane {
 
 		GridLayout gridLayout = new GridLayout(4, false);
 		gridLayout.verticalSpacing = 8;
-		shell.setLayout( gridLayout);
+		shell.setLayout(gridLayout);
 
 		new Label(shell, SWT.NULL).setText("Name:");
 		Text nameText = new Text(shell, SWT.SINGLE | SWT.BORDER);
@@ -122,9 +122,12 @@ public class JsonCustomOptionPane {
 					messageBox.open();
 				} else {
 					try {
-						JsonProperty jsonProperty = new JsonProperty(nameText.getText(), descriptionText.getText(),
-								versionText.getText(), typeCombo.getItem(typeCombo.getSelectionIndex()));
-						jsonUtils.serializeJson(jsonProperty, graph.getPipelineString());
+						PipelineJsonProperty jsonProperty = new PipelineJsonProperty(nameText.getText(),
+								descriptionText.getText(), versionText.getText(),
+								typeCombo.getItem(typeCombo.getSelectionIndex()));
+
+						jsonUtils.serializeJson(jsonProperty, graph.getPipelineString(),
+								graph.getPipelinePropertiesString());
 						shell.close();
 					} catch (CoreException | IOException error) {
 						error.printStackTrace(); // TODO:

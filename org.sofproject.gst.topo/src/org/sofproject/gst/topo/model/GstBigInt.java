@@ -29,20 +29,27 @@
 
 package org.sofproject.gst.topo.model;
 
-public class GstBoolean extends GstProperty {
+import java.math.BigInteger;
 
-	private boolean value = false;
-	private boolean defaultValue = false;
+public class GstBigInt extends GstProperty {
 
-	public GstBoolean(String category, String name, String description, boolean readOnly, boolean defaultValue) {
+	private BigInteger value;
+	private BigInteger minValue;
+	private BigInteger maxValue;
+	private BigInteger defaultValue;
+
+	public GstBigInt(String category, String name, String description, boolean readOnly, BigInteger minValue, BigInteger maxValue,
+			BigInteger defaultValue) {
 		super(category, name, description, readOnly);
+		this.minValue = minValue;
+		this.maxValue = maxValue;
 		this.defaultValue = defaultValue;
 		this.value = defaultValue;
 	}
 
 	@Override
 	public Type getNodeAtrributeType() {
-		return Type.NODE_A_BOOLEAN;
+		return Type.NODE_A_INTEGER;
 	}
 
 	@Override
@@ -57,34 +64,19 @@ public class GstBoolean extends GstProperty {
 
 	@Override
 	public String getPropertyString(String nodeName) {
-		boolean propertyValue = ((this.isChanged()) ? value : defaultValue);
-		return "\""+getCategory() + "\":{\"default\":" + propertyValue + ",\"element\":\"" + nodeName + "\",\"type\":\"boolean\"},";
+		BigInteger propertyValue = ((this.isChanged()) ? value : defaultValue);
+
+		return "\""+getCategory() + "\":{\"default\":" + propertyValue + ",\"element\":\"" + nodeName + "\",\"minValue\":" + minValue
+				+ ",\"maxValue\":" + maxValue + ",\"type\":\"integer\"},";
 	}
 
 	@Override
 	public void setValue(Object value) {
-		if (value instanceof Boolean) {
-			this.value = (Boolean) value;
-		} else if (value instanceof Integer) {
-			this.value = ((Integer) value) == 0 ? false : true;
-		} else if (value instanceof String) {
-			if (value.equals("true")) {
-				this.value = true;
-			} else if (value.equals("false")) {
-				this.value = false;
-			} else {
-				throw new RuntimeException("Unrecognized string value");
-			}
-		} else {
-			throw new RuntimeException("Boolean value expected");
+		if (value instanceof String) {
+			this.value = new BigInteger((String) value);
 		}
 		if (owner != null) {
 			owner.notifyPropertyChanged(this);
 		}
-	}
-
-	@Override
-	public String getStringValue() {
-		return value ? "true" : "false";
 	}
 }

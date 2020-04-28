@@ -51,9 +51,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonUtils {
 
-	JsonProperty jsonProperty_;
+	PipelineJsonProperty jsonProperty_;
 
-	public void serializeJson(JsonProperty jsonProperty, String pipelineString) throws CoreException, IOException {
+	public void serializeJson(PipelineJsonProperty jsonProperty, String pipelineString, String pipelinePropertyString)
+			throws CoreException, IOException {
 		try {
 			String projectPath = getProjectPath();
 			File file;
@@ -66,9 +67,17 @@ public class JsonUtils {
 				file = new File(jsonProperty.getName() + ".json");
 			}
 			jsonProperty.setTemplate(pipelineString);
+			String properties = "";
+			if (pipelinePropertyString.isEmpty()) {
+				properties = "{}";
+			} else {
+				properties = "{" + pipelinePropertyString.substring(0, pipelinePropertyString.length() - 1) + "}";
+			}
+			ObjectMapper obj = new ObjectMapper();
+			jsonProperty.writeToProperties(properties);
 			jsonProperty_ = jsonProperty;
 			BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-			ObjectMapper obj = new ObjectMapper();
+
 			obj.writeValue(writer, jsonProperty);
 			writer.close();
 
@@ -104,7 +113,7 @@ public class JsonUtils {
 		return new GstDockerOpsProvider(this);
 	}
 
-	public JsonProperty getJsonProperty() {
+	public PipelineJsonProperty getJsonProperty() {
 		return jsonProperty_;
 	}
 

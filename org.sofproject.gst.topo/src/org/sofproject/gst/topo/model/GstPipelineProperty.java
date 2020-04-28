@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Intel Corporation
+ * Copyright (c) 2020, Intel Corporation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,84 +27,59 @@
  *
  */
 
-package org.sofproject.topo.ui.json;
+package org.sofproject.gst.topo.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+public class GstPipelineProperty extends GstProperty {
 
-@JsonSerialize
-public class JsonProperty {
+	private boolean value = false;
+	private boolean defaultValue = false;
 
-	private String name;
-	private String description;
-	private String version;
-	private String type;
-	private String template;
-	private Parameters parameters;
-
-	public JsonProperty(String name, String description, String version, String type) {
-		this.name = name;
-		this.description = description;
-		this.version = version;
-		this.type = type;
-
-		// set default parameters
-		this.parameters = new Parameters("object", new Properties());
+	public GstPipelineProperty(String category, String name, String description, boolean readOnly, boolean defaultValue) {
+		super(category, name, description, readOnly);
+		this.defaultValue = defaultValue;
+		this.value = defaultValue;
 	}
 
-	public String getName() {
-		return name;
+	@Override
+	public Type getNodeAtrributeType() {
+		return Type.NODE_A_PROPPIPE;
 	}
 
-	public String getDescription() {
-		return description;
+	@Override
+	public Object getValue() {
+		return value;
 	}
 
-	public String getVersion() {
-		return version;
+	@Override
+	public Object getDefaultValue() {
+		return defaultValue;
 	}
 
-	public String getType() {
-		return type;
+	@Override
+	public void setValue(Object value) {
+		if (value instanceof Boolean) {
+			this.value = (Boolean) value;
+		} else if (value instanceof Integer) {
+			this.value = ((Integer) value) == 0 ? false : true;
+		} else if (value instanceof String) {
+			if (value.equals("true")) {
+				this.value = true;
+			} else if (value.equals("false")) {
+				this.value = false;
+			} else {
+				throw new RuntimeException("Unrecognized string value");
+			}
+		} else {
+			throw new RuntimeException("Boolean value expected");
+		}
+		if (owner != null) {
+			owner.notifyPropertyChanged(this);
+		}
 	}
 
-	public String getTemplate() {
-		return template;
+	@Override
+	public String getStringValue() {
+		return value ? "true" : "false";
 	}
 
-	public Parameters getParameters() {
-		return parameters;
-	}
-
-	public void setTemplate(String newTemplate) {
-		this.template = newTemplate;
-	}
-
-	public void setParameters(Parameters parameters) {
-		this.parameters = parameters;
-	}
-}
-
-@JsonSerialize
-class Parameters {
-	private String type;
-	private Properties properties;
-
-	public Parameters(String type, Properties properties) {
-		this.type = type;
-		this.properties = properties;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public Properties getProperties() {
-		return properties;
-	}
-}
-
-@JsonSerialize
-class Properties {
-	public Properties() {
-	}
 }

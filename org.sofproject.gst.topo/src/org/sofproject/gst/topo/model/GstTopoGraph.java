@@ -216,4 +216,20 @@ public class GstTopoGraph implements ITopoGraph {
 		return opsProvider;
 	}
 
+	@Override
+	public String getPipelinePropertiesString() {
+		try {
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			Writer writer = new BufferedWriter(new OutputStreamWriter(os));
+			pipeline.serializePipelineProperties(writer);
+			writer.close();
+			os.close();
+
+			return os.toString();
+		} catch (IOException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 }

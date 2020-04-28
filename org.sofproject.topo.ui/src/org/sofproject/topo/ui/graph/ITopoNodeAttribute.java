@@ -29,6 +29,8 @@
 
 package org.sofproject.topo.ui.graph;
 
+import java.util.List;
+
 public interface ITopoNodeAttribute {
 	public enum Type {
 		NODE_A_STRING,
@@ -39,16 +41,19 @@ public interface ITopoNodeAttribute {
 		NODE_A_BITS,
 		NODE_A_REFERENCE,
 		NODE_A_ENUM,
-		NODE_A_OTHER
+		NODE_A_OTHER,
+		NODE_A_PROPPIPE
 	}
 
 	public Type getNodeAtrributeType();
-
+		
 	public String getName();
 
 	public String getCategory();
 
 	public Object getValue();
+	
+	public List<String> getEnumValues();
 
 	public void setValue(Object value);
 

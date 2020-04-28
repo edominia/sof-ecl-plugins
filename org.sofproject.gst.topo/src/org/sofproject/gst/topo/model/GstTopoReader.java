@@ -56,8 +56,8 @@ public class GstTopoReader {
 			GstTopoNode node = new GstTopoNode(elem, graph);
 			for (int i = 1; i < items.length; i++) {
 				String[] prop = items[i].split("=");
-				if (prop.length == 2) {
-					node.setAttribute(prop[0], prop[1]);
+				if (prop.length == 2) {	
+					node.setAttribute(prop[0], "value", prop[1]);
 				}
 			}
 			graph.addNode(node);

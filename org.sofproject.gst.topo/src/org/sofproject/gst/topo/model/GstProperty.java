@@ -31,19 +31,21 @@ package org.sofproject.gst.topo.model;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.sofproject.topo.ui.graph.ITopoNodeAttribute;
 
 public abstract class GstProperty implements ITopoNodeAttribute, Cloneable {
 
-	public static final String CAT_NAME = "Properties";
-
 	private String name;
+	private String category;
 	private String description;
 	private boolean readOnly;
 	protected GstTopoNode owner;
 
-	public GstProperty(String name, String description, boolean readOnly) {
+	public GstProperty(String category, String name, String description, boolean readOnly) {
+		this.category = category;
 		this.name = name;
 		this.description = description;
 		this.readOnly = readOnly;
@@ -67,9 +69,14 @@ public abstract class GstProperty implements ITopoNodeAttribute, Cloneable {
 		return description;
 	}
 
+	// name is category
 	@Override
 	public String getCategory() {
-		return CAT_NAME;
+		return category;
+	}
+
+	public String getPropertyString(String nodeName) {
+		return "";
 	}
 
 	@Override
@@ -79,6 +86,11 @@ public abstract class GstProperty implements ITopoNodeAttribute, Cloneable {
 	}
 
 	public abstract Object getDefaultValue();
+
+	@Override
+	public List<String> getEnumValues() {
+		return new ArrayList<String>();
+	}
 
 	@Override
 	public boolean isChanged() {
@@ -91,6 +103,19 @@ public abstract class GstProperty implements ITopoNodeAttribute, Cloneable {
 	}
 
 	public void serialize(Writer writer) throws IOException {
-		writer.write(name + "=" + getStringValue());
+		if (name.equals("value")) {
+			writer.write(" ");
+			writer.write(category + "=" + getStringValue());
+		}
+	}
+
+	public void serializePipelineProperties(Writer writer, GstProperty previousProperty, String nodeName)
+			throws IOException {
+		if (name.equals("pipeline properties") && getStringValue().equals("true")) {
+			if (previousProperty != null)
+				writer.write(previousProperty.getPropertyString(nodeName));
+
+		}
+
 	}
 }

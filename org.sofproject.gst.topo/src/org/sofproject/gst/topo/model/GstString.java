@@ -34,8 +34,8 @@ public class GstString extends GstProperty {
 	private String value = "";
 	private String defaultValue = "";
 
-	public GstString(String name, String description, boolean readOnly, String defaultValue) {
-		super(name, description, readOnly);
+	public GstString(String category, String name, String description, boolean readOnly, String defaultValue) {
+		super(category, name, description, readOnly);
 		this.defaultValue = defaultValue;
 		this.value = defaultValue;
 	}
@@ -53,6 +53,18 @@ public class GstString extends GstProperty {
 	@Override
 	public Object getDefaultValue() {
 		return defaultValue;
+	}
+
+	@Override
+	public String getPropertyString(String nodeName) {
+		String propertyValue = ((this.isChanged()) ? value : defaultValue);
+		if(propertyValue=="null") {
+			return "\"" + getCategory() + "\":{\"element\":\"" + nodeName
+					+ "\",\"type\":\"string\"},";
+		}else {
+			return "\"" + getCategory() + "\":{\"default\":\"" + propertyValue + "\",\"element\":\"" + nodeName
+					+ "\",\"type\":\"string\"},";
+		}
 	}
 
 	@Override

@@ -41,7 +41,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.sofproject.core.AudioDevNodeProject;
 import org.sofproject.core.connection.AudioDevNodeConnection;
 import org.sofproject.core.ops.SimpleRemoteOp;
-import org.sofproject.topo.ui.json.JsonProperty;
+import org.sofproject.topo.ui.json.PipelineJsonProperty;
 import org.sofproject.topo.ui.json.JsonUtils;
 
 import com.jcraft.jsch.ChannelExec;
@@ -71,7 +71,7 @@ public class GstDockerOperation extends SimpleRemoteOp {
 				throw new InvocationTargetException(new IllegalStateException("Node not connected"));
 			}
 
-			JsonProperty jsonProperty = jsonUtils.getJsonProperty();
+			PipelineJsonProperty jsonProperty = jsonUtils.getJsonProperty();
 
 			AudioDevNodeProject proj = conn.getProject();
 			Session session = conn.getSession();

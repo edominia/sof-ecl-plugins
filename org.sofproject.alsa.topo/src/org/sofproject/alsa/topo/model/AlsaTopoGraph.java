@@ -601,4 +601,9 @@ public class AlsaTopoGraph implements ITopoGraph {
 		pcs.removePropertyChangeListener(listener);
 	}
 
+	@Override
+	public String getPipelinePropertiesString() {
+		return null;
+	}
+
 }

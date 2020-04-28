@@ -29,8 +29,11 @@
 
 package org.sofproject.gst.topo.plugins;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.sofproject.gst.topo.model.GstProperty;
 
@@ -41,7 +44,7 @@ public class GstElement {
 	private String longName;
 	private String klass;
 	private String description;
-	private Map<String, GstProperty> properties = new HashMap<>();
+	private Map<String, List<GstProperty>> properties = new HashMap<>();
 
 	public GstElement(String name, GstPlugin parent) {
 		this.name = name;
@@ -81,17 +84,16 @@ public class GstElement {
 	}
 
 	public void addProperty(GstProperty prop) {
-		this.properties.put(prop.getName(), prop);
+		if (!this.properties.containsKey(prop.getCategory())) {
+			this.properties.put(prop.getCategory(), new ArrayList<GstProperty>());
+		}
+
+		this.properties.get(prop.getCategory()).add(prop);
 	}
 
-	public void clonePropertiesTo(Map<String, GstProperty> propertiesCopy) {
+	public void clonePropertiesTo(Map<String, List<GstProperty>> propertiesCopy) {
 		for (String pn : properties.keySet()) {
-			try {
-				propertiesCopy.put(pn, properties.get(pn).clone());
-			} catch (CloneNotSupportedException e) {
-				// TODO:
-				e.printStackTrace();
-			}
+			propertiesCopy.put(pn, properties.get(pn).stream().collect(Collectors.toList()));
 		}
 	}
 

@@ -33,10 +33,13 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import org.sofproject.core.binfile.BinStruct;
 import org.sofproject.gst.topo.plugins.GstElement;
@@ -54,7 +57,7 @@ public class GstTopoNode implements ITopoNode {
 	 * Reference to the source element.
 	 */
 	private GstElement elem;
-	private Map<String, GstProperty> properties = new HashMap<>();
+	private Map<String, List<GstProperty>> properties = new HashMap<>();
 	private GstTopoGraph parent;
 	private GstTopoConnection inConn; // single incoming connection allowed
 	private GstTopoConnection outConn; // single outgoing connection allowed
@@ -63,8 +66,10 @@ public class GstTopoNode implements ITopoNode {
 	public GstTopoNode(GstElement elem, GstTopoGraph parent) {
 		this.elem = elem;
 		elem.clonePropertiesTo(properties);
-		for (GstProperty prop : properties.values()) {
-			prop.setOwner(this);
+		for (List<GstProperty> prop : properties.values()) {
+			for (GstProperty gstProperty : prop) {
+				gstProperty.setOwner(this);
+			}
 		}
 		this.parent = parent;
 	}
@@ -99,11 +104,24 @@ public class GstTopoNode implements ITopoNode {
 
 	public void serialize(Writer writer) throws IOException {
 		writer.write(elem.getName());
-		for (GstProperty prop : properties.values()) {
-			if (!prop.isChanged())
-				continue;
-			writer.write(" ");
-			prop.serialize(writer);
+		for (List<GstProperty> prop : properties.values()) {
+			for (GstProperty gstProperty : prop) {
+				if (!gstProperty.isChanged())
+					continue;
+				gstProperty.serialize(writer);
+			}
+
+		}
+	}
+
+	public void serializePipelineProperties(Writer writer, String nodeName) throws IOException {
+		for (List<GstProperty> prop : properties.values()) {
+			GstProperty previousProperty = null;
+			for (GstProperty gstProperty : prop) {
+				gstProperty.serializePipelineProperties(writer, previousProperty, nodeName);
+				previousProperty = gstProperty;
+			}
+
 		}
 	}
 
@@ -112,13 +130,35 @@ public class GstTopoNode implements ITopoNode {
 		return elem.getName();
 	}
 
-	@Override
-	public Collection<? extends ITopoNodeAttribute> getAttributes() {
-		return properties.values();
+	public String getRealName() {
+		String realName = "";
+		List<GstProperty> nameProperty = properties.get("name");
+
+		for (GstProperty gstProperty : nameProperty) {
+			if (gstProperty.getName() == "value") {
+				realName = gstProperty.getValue().toString();
+			}
+		}
+
+		return realName;
 	}
 
-	public void setAttribute(String name, String strValue) {
-		GstProperty prop = properties.get(name);
+	@Override
+	public Collection<? extends ITopoNodeAttribute> getAttributes() {
+
+		List<GstProperty> collection = new ArrayList<GstProperty>();
+		for (List<GstProperty> iterable_element : properties.values()) {
+			collection.addAll(iterable_element);
+		}
+		return collection;
+	}
+
+	public void setAttribute(String category, String name, String strValue) {
+
+		int index = IntStream.range(0, properties.get(category).size())
+				.filter(i -> properties.get(category).get(i).getName().equals(name)).findFirst().orElse(-1);
+
+		GstProperty prop = properties.get(category).get(index);
 		if (prop != null) {
 			prop.setValue(strValue);
 		}

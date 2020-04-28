@@ -90,5 +90,24 @@ public class GstTopoPipeline implements ITopoCollectionNode {
 			}
 		}
 	}
+	
+	public void serializePipelineProperties(Writer writer) throws IOException {
+		GstTopoNode nextNode = null;
+		for (GstTopoNode node : nodes) {
+			if (node.isFirst()) {
+				nextNode = node;
+				break;
+			}
+		}
+		while (nextNode != null) {
+			nextNode.serializePipelineProperties(writer, nextNode.getRealName());
+			GstTopoConnection conn = nextNode.getOutgoingConnection();
+			if (conn == null) {
+				nextNode = null;
+			} else {
+				nextNode = (GstTopoNode) conn.getTarget();
+			}
+		}
+	}
 
 }

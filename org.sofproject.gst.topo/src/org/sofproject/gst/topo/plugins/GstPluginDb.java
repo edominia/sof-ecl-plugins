@@ -33,9 +33,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -43,9 +48,13 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.sofproject.gst.topo.model.GstBigInt;
 import org.sofproject.gst.topo.model.GstBoolean;
 import org.sofproject.gst.topo.model.GstDouble;
+import org.sofproject.gst.topo.model.GstEnum;
 import org.sofproject.gst.topo.model.GstInteger;
+import org.sofproject.gst.topo.model.GstLong;
+import org.sofproject.gst.topo.model.GstPipelineProperty;
 import org.sofproject.gst.topo.model.GstString;
 
 public class GstPluginDb {
@@ -153,6 +162,9 @@ public class GstPluginDb {
 			String flagsLine = in.readLine();
 			if (flagsLine == null)
 				throw new RuntimeException("flags expected");
+			while (!flagsLine.contains("flags")) {
+				flagsLine = in.readLine();
+			}
 			boolean readOnly = !flagsLine.contains("writable");
 
 			// TODO: caps
@@ -180,16 +192,48 @@ public class GstPluginDb {
 					int eqPos = typeLine.indexOf("\"", bqPos + 1);
 					defVal = typeLine.substring(bqPos + 1, eqPos);
 				}
-				elem.addProperty(new GstString(propName, propDesc, readOnly, defVal));
+				elem.addProperty(new GstString(propName, "value", propDesc, readOnly, defVal));
+				elem.addProperty(new GstPipelineProperty(propName, "pipeline properties", propDesc, readOnly, false));
+			} else if (typeTok[0].equals("Object")) {
+				elem.addProperty(new GstString(propName, "value", propDesc, readOnly, "null"));
+				elem.addProperty(new GstPipelineProperty(propName, "pipeline properties", propDesc, readOnly, false));
 			} else if (typeTok[0].equals("Boolean.")) {
 				boolean defVal = typeTok[2].equals("true");
-				elem.addProperty(new GstBoolean(propName, propDesc, readOnly, defVal));
+				elem.addProperty(new GstBoolean(propName, "value", propDesc, readOnly, defVal));
+				elem.addProperty(new GstPipelineProperty(propName, "pipeline properties", propDesc, readOnly, false));
 			} else if (typeTok[0].equals("Integer.")) {
 				int minVal = Integer.parseInt(typeTok[2]);
 				int maxVal = Integer.parseInt(typeTok[4]);
 				int defVal = Integer.parseInt(typeTok[6]);
-				elem.addProperty(new GstInteger(propName, propDesc, readOnly, minVal, maxVal, defVal));
-			} else if (typeTok[0].equals("Unsigned") && typeTok[1].equals("Integer.")) {
+				elem.addProperty(new GstInteger(propName, "value", propDesc, readOnly, minVal, maxVal, defVal));
+				elem.addProperty(new GstPipelineProperty(propName, "pipeline properties", propDesc, readOnly, false));
+			} else if ((typeTok[0].equals("Unsigned") && typeTok[1].startsWith("Integer"))) {
+
+				if (typeTok[3].length() >= 18 || typeTok[5].length() >=18 || typeTok[7].length() >= 18) {
+					BigInteger minVal = new BigInteger(typeTok[3]);
+					BigInteger maxVal = new BigInteger(typeTok[5]);
+					BigInteger defVal = new BigInteger(typeTok[7]);
+					
+					elem.addProperty(new GstBigInt(propName, "value", propDesc, readOnly, minVal, maxVal, defVal));
+					elem.addProperty(
+							new GstPipelineProperty(propName, "pipeline properties", propDesc, readOnly, false));
+					
+				} else {
+					long minVal = Long.parseLong(typeTok[3]);
+					long maxVal = Long.parseLong(typeTok[5]);
+					long defVal = Long.parseLong(typeTok[7]);
+					elem.addProperty(new GstLong(propName, "value", propDesc, readOnly, minVal, maxVal, defVal));
+					elem.addProperty(
+							new GstPipelineProperty(propName, "pipeline properties", propDesc, readOnly, false));
+				}
+			} else if (typeTok[0].equals("Integer64.")) {
+				long minVal = Long.parseLong(typeTok[2]);
+				long maxVal = Long.parseLong(typeTok[4]);
+				long defVal = Long.parseLong(typeTok[6]);
+				elem.addProperty(new GstLong(propName, "value", propDesc, readOnly, minVal, maxVal, defVal));
+				elem.addProperty(new GstPipelineProperty(propName, "pipeline properties", propDesc, readOnly, false));
+
+//			} else if (typeTok[0].equals("Unsigned") && typeTok[1].equals("Integer.")) {
 				// TODO: need Long here
 //				int minVal = Integer.parseInt(typeTok[3]);
 //				int maxVal = Integer.parseInt(typeTok[5]);
@@ -205,8 +249,9 @@ public class GstPluginDb {
 //				double maxVal = Double.parseDouble(typeTok[4]);
 				typeTok[typeTok.length - 1] = typeTok[typeTok.length - 1].replace(',', '.');
 				double defVal = Double.parseDouble(typeTok[typeTok.length - 1]);
-				elem.addProperty(new GstDouble(propName, propDesc, readOnly, minVal, maxVal, defVal));
-			} else if (typeTok[0].equals("Enum") || typeTok[0].equals("Flags")) {
+				elem.addProperty(new GstDouble(propName, "value", propDesc, readOnly, minVal, maxVal, defVal));
+				elem.addProperty(new GstPipelineProperty(propName, "pipeline properties", propDesc, readOnly, false));
+			} else if (typeTok[0].equals("Flags")) {
 				String enumValLine = in.readLine().trim();
 				while (enumValLine != null && enumValLine.length() > 0 && enumValLine.charAt(0) == '(') {
 					enumValLine = in.readLine();
@@ -216,7 +261,46 @@ public class GstPluginDb {
 				}
 				nextLine = enumValLine;
 				continue;
+			} else if (typeTok[0].equals("Enum")) {
+				String enumValLine = in.readLine().trim();
+				List<String> enumList = new ArrayList<String>();
+				Pattern compiledPattern = Pattern.compile("\\(\\d+\\):\\W([0-9a-zA-z_]+)");
+				if (enumValLine.charAt(0) == '(') {
+					Matcher matcher = compiledPattern.matcher(enumValLine);
+					if (matcher.find()) {
+						enumList.add(matcher.group(1));
+					}
+				}
+				int BUFFER_SIZE = 1000;
+
+				while (enumValLine != null && enumValLine.length() > 0 && enumValLine.charAt(0) == '(') {
+					in.mark(BUFFER_SIZE);
+					enumValLine = in.readLine();
+					if (enumValLine != null) {
+						enumValLine = enumValLine.trim();
+						if (!enumValLine.isEmpty() && enumValLine.charAt(0) == '(') {
+							Matcher matcher = compiledPattern.matcher(enumValLine);
+							if (matcher.find()) {
+								enumList.add(matcher.group(1));
+							}
+						} else {
+							in.reset(); // rewinds the stream back to the mark
+						}
+					}
+				}
+				elem.addProperty(new GstEnum(propName, "value", propDesc, readOnly,
+						enumList.indexOf(typeTok[4].replace("\"", "")), enumList));
+				elem.addProperty(new GstPipelineProperty(propName, "pipeline properties", propDesc, readOnly, false));
+
+			} else if (typeTok[0].equals("Boxed") && typeTok[1].equals("pointer")) {
+				String enumValLine = in.readLine().trim();
+				while (enumValLine != null && enumValLine.length() > 0) {
+					if (enumValLine.equals("Element Signals:"))
+						return;
+					enumValLine = in.readLine();
+				}
 			}
+
 			nextLine = in.readLine();
 		}
 	}
@@ -227,7 +311,7 @@ public class GstPluginDb {
 			return;
 		BufferedReader in = new BufferedReader(new InputStreamReader(is));
 		GstElement elem = new GstElement(name, plg);
-
+		String nextLine = "";
 //		System.out.println("Reading from " + plg.getName() + "." + elem.getName());
 		try {
 			in.readLine(); // skip "Factory Details:"
@@ -236,7 +320,7 @@ public class GstPluginDb {
 			elem.setKlass(in.readLine().substring(PROP_VALUE_OFFSET));
 			elem.setDescription(in.readLine().substring(PROP_VALUE_OFFSET));
 
-			String nextLine = in.readLine();
+			nextLine = in.readLine();
 			while (nextLine != null) {
 				if (nextLine.equals("Element Properties:")) {
 					readElementProperties(elem, in);
@@ -247,7 +331,7 @@ public class GstPluginDb {
 
 			plg.addElement(elem);
 		} catch (RuntimeException e) {
-//			e.printStackTrace();
+			//e.printStackTrace();
 		} finally {
 			in.close();
 		}

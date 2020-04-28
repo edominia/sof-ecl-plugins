@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Intel Corporation
+ * Copyright (c) 2020, Intel Corporation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,20 +29,25 @@
 
 package org.sofproject.gst.topo.model;
 
-public class GstBoolean extends GstProperty {
+import java.util.List;
 
-	private boolean value = false;
-	private boolean defaultValue = false;
+public class GstEnum extends GstProperty {
 
-	public GstBoolean(String category, String name, String description, boolean readOnly, boolean defaultValue) {
+	private int value = 0;
+	private int defaultValue = 0;
+	private List<String> values;
+
+	public GstEnum(String category, String name, String description, boolean readOnly, int defaultValue,
+			List<String> values) {
 		super(category, name, description, readOnly);
+		this.values = values;
 		this.defaultValue = defaultValue;
 		this.value = defaultValue;
 	}
 
 	@Override
 	public Type getNodeAtrributeType() {
-		return Type.NODE_A_BOOLEAN;
+		return Type.NODE_A_ENUM;
 	}
 
 	@Override
@@ -57,26 +62,18 @@ public class GstBoolean extends GstProperty {
 
 	@Override
 	public String getPropertyString(String nodeName) {
-		boolean propertyValue = ((this.isChanged()) ? value : defaultValue);
-		return "\""+getCategory() + "\":{\"default\":" + propertyValue + ",\"element\":\"" + nodeName + "\",\"type\":\"boolean\"},";
+		int propertyValue = ((this.isChanged()) ? value : defaultValue);
+		String propertyValueString = values.get(propertyValue);
+		return "\"" + getCategory() + "\":{\"default\":\"" + propertyValueString + "\",\"element\":\"" + nodeName
+				+ "\",\"type\":\"enum\"},";
 	}
 
 	@Override
 	public void setValue(Object value) {
-		if (value instanceof Boolean) {
-			this.value = (Boolean) value;
-		} else if (value instanceof Integer) {
-			this.value = ((Integer) value) == 0 ? false : true;
+		if (value instanceof Integer) {
+			this.value = (int) value;
 		} else if (value instanceof String) {
-			if (value.equals("true")) {
-				this.value = true;
-			} else if (value.equals("false")) {
-				this.value = false;
-			} else {
-				throw new RuntimeException("Unrecognized string value");
-			}
-		} else {
-			throw new RuntimeException("Boolean value expected");
+			this.value = values.indexOf(value);
 		}
 		if (owner != null) {
 			owner.notifyPropertyChanged(this);
@@ -84,7 +81,12 @@ public class GstBoolean extends GstProperty {
 	}
 
 	@Override
+	public List<String> getEnumValues() {
+		return values;
+	}
+
+	@Override
 	public String getStringValue() {
-		return value ? "true" : "false";
+		return values.get(value);
 	}
 }

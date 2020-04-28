@@ -74,6 +74,7 @@ public class TopoNodePropertySource implements IPropertySource, PropertyChangeLi
 	private void addAttributes(Collection<? extends ITopoNodeAttribute> attributes) {
 		for (ITopoNodeAttribute attr : attributes) {
 			PropertyDescriptor pd = null;
+
 			if (attr.isReadOnly()) {
 				pd = new PropertyDescriptor(attr, String.format("[%s]", attr.getName()));
 			} else {
@@ -84,9 +85,13 @@ public class TopoNodePropertySource implements IPropertySource, PropertyChangeLi
 					pd = new TextPropertyDescriptor(attr, attr.getName());
 					break;
 				case NODE_A_BOOLEAN:
+				case NODE_A_PROPPIPE:
 					String[] values = { "false", "true" };
+					pd = new ComboBoxPropertyDescriptor(attr, attr.getName(), values);
+					break;
+				case NODE_A_ENUM:
 					pd = new ComboBoxPropertyDescriptor(attr, attr.getName(),
-							values);
+							attr.getEnumValues().toArray(new String[0]));
 					break;
 				// TODO: other types
 				default:
@@ -120,12 +125,15 @@ public class TopoNodePropertySource implements IPropertySource, PropertyChangeLi
 	public Object getPropertyValue(Object id) {
 		if (id instanceof ITopoNodeAttribute) {
 			ITopoNodeAttribute attr = (ITopoNodeAttribute) id;
-			if (attr.getNodeAtrributeType() == Type.NODE_A_BOOLEAN) {
+			if (attr.getNodeAtrributeType() == Type.NODE_A_BOOLEAN
+					|| attr.getNodeAtrributeType() == Type.NODE_A_PROPPIPE) {
 				if (attr.isReadOnly()) {
 					return (Boolean) attr.getValue() ? "true" : "false";
 				} else {
-					return (Boolean)attr.getValue() ? 1 : 0;
+					return (Boolean) attr.getValue() ? 1 : 0;
 				}
+			} else if (attr.getNodeAtrributeType() == Type.NODE_A_ENUM) {
+				return attr.getValue();
 			} else {
 				return attr.getStringValue();
 			}
