@@ -47,4 +47,7 @@ public interface IAudioDevNodeConst {
 	String AUDIO_DEV_PROJ_PROP_NODE_ADDRESS = "nodeAddress";
 
 	String AUDIO_DEV_PROJ_PROP_NODE_PORT = "nodePort";
+	
+	int DEFAULT_REMOTE_SSH_PORT = 22;
+
 }

@@ -56,8 +56,6 @@ public class AudioDevNodeProject {
 
 	// node attributes
 
-	public static int DEFAULT_REMOTE_SSH_PORT = 22;
-
 	private String address;
 	private int port;
 
@@ -91,7 +89,7 @@ public class AudioDevNodeProject {
 
 	public AudioDevNodeProject() {
 		address = "";
-		port = DEFAULT_REMOTE_SSH_PORT;
+		port = IAudioDevNodeConst.DEFAULT_REMOTE_SSH_PORT;
 		for (IAudioDevExtensionProvider extProvider : AudioDevExtensions.getInstance().getProviders()) {
 			IAudioDevExtension ext = extProvider.createExtension();
 			extensions.put(extProvider.getExtensionId(), ext);

@@ -39,10 +39,12 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.sofproject.core.AudioDevNodeProject;
+import org.sofproject.core.IAudioDevNodeConst;
 
 public class NewAudioDevNodeCreationPage extends WizardNewProjectCreationPage {
 
 	private Text addr;
+	private Text port;
 
 	private Listener confModifyListener = e -> {
 		boolean valid = validatePage();
@@ -70,11 +72,19 @@ public class NewAudioDevNodeCreationPage extends WizardNewProjectCreationPage {
 		addrGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		new Label(addrGroup, SWT.NONE).setText("Node Address");
-		GridData data = new GridData(GridData.FILL_HORIZONTAL);
-		data.grabExcessHorizontalSpace = true;
+		GridData addrData = new GridData(GridData.FILL_HORIZONTAL);
+		addrData.grabExcessHorizontalSpace = true;
 		addr = new Text(addrGroup, SWT.BORDER);
-		addr.setLayoutData(data);
+		addr.setLayoutData(addrData);
 		addr.addListener(SWT.Modify, confModifyListener);
+		
+		new Label(addrGroup, SWT.NONE).setText("Node Port");
+		GridData portData = new GridData(GridData.FILL_HORIZONTAL);
+		portData.grabExcessHorizontalSpace = true;
+		port = new Text(addrGroup, SWT.BORDER);
+		port.setText(Integer.toString(IAudioDevNodeConst.DEFAULT_REMOTE_SSH_PORT));
+		port.setLayoutData(portData);
+		port.addListener(SWT.Modify, confModifyListener);
 	}
 
 	@Override
@@ -86,5 +96,9 @@ public class NewAudioDevNodeCreationPage extends WizardNewProjectCreationPage {
 
 	public String getAddress() {
 		return addr.getText();
+	}
+	
+	public String getPort() {
+		return port.getText();
 	}
 }

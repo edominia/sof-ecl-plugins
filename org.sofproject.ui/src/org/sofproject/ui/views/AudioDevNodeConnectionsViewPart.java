@@ -90,6 +90,17 @@ public class AudioDevNodeConnectionsViewPart extends ViewPart {
 				return conn.getProject().getAddress();
 			}
 		});
+		
+		TableViewerColumn colNodePort = new TableViewerColumn(viewer, SWT.NONE);
+		colNodePort.getColumn().setWidth(100);
+		colNodePort.getColumn().setText("Port");
+		colNodePort.setLabelProvider(new ColumnLabelProvider() {
+			@Override
+			public String getText(Object element) {
+				AudioDevNodeConnection conn = (AudioDevNodeConnection) element;
+				return Integer.toString(conn.getProject().getPort());
+			}
+		});
 
 //		TableViewerColumn colResPath = new TableViewerColumn(viewer, SWT.NONE);
 //		colResPath.getColumn().setWidth(200);

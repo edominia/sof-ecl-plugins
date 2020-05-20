@@ -43,9 +43,12 @@ public class AudioDevNodeLoginDialog extends TrayDialog {
 
 	private Text projectField;
 	private Text nodeAddressField;
+	private Text nodePortField;
+
 
 	private String project;
 	private String nodeAddress;
+	private String nodePort;
 
 	private Text loginField;
 	private Text passField;
@@ -53,10 +56,11 @@ public class AudioDevNodeLoginDialog extends TrayDialog {
 	private String login = null;
 	private String pass = null;
 
-	public AudioDevNodeLoginDialog(Shell parentShell, String project, String nodeAddress) {
+	public AudioDevNodeLoginDialog(Shell parentShell, String project, String nodeAddress, int nodePort) {
 		super(parentShell);
 		this.project = project;
 		this.nodeAddress = nodeAddress;
+		this.nodePort = Integer.toString(nodePort);
 	}
 
 	@Override
@@ -76,7 +80,8 @@ public class AudioDevNodeLoginDialog extends TrayDialog {
 		projectField.setText(project);
 
 		nodeAddressField = new Text(infoGroup, SWT.READ_ONLY);
-		nodeAddressField.setText("Connecting to: " + nodeAddress);
+		nodePortField = new Text(infoGroup, SWT.READ_ONLY);
+		nodeAddressField.setText("Connecting to: " + nodeAddress + ":" + nodePort);
 
 		Composite loginGroup = new Composite(container, SWT.NONE);
 		layout = new GridLayout();

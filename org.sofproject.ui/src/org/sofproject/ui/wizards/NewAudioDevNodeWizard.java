@@ -103,6 +103,7 @@ public class NewAudioDevNodeWizard extends Wizard implements INewWizard {
 
 	protected void createConnection(IProgressMonitor monitor) throws CoreException {
 		audioDevNodeProject.setAddress(connPage.getAddress());
+		audioDevNodeProject.setPort(Integer.parseInt(connPage.getPort()));
 		// TODO: set port
 
 		for (IWizardPage page : getPages()) {

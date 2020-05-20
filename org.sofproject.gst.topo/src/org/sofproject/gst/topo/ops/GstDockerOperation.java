@@ -91,7 +91,7 @@ public class GstDockerOperation extends SimpleRemoteOp {
 
 			channel.setPty(true); // for ctrl+c sending
 			String command = String.format(
-					"docker exec -t video_analytics_serving_gstreamer /bin/bash -c \"cd pipelines; mkdir -p %s; cd %s; touch %s; echo \'%s\' > %s\"",
+					"cd  /home/video-analytics/pipelines; mkdir -p %s; cd %s; touch %s; echo \'%s\' > %s",
 					linuxPartPathToJson, linuxPartPathToJson, jsonFileName, currentLine.replace("\"", "\\\""), jsonFileName);
 			channel.setCommand(command);
 
