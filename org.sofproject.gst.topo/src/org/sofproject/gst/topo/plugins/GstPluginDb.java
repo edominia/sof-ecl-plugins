@@ -157,8 +157,6 @@ public class GstPluginDb {
 			String propName = nextLine.substring(0, nameDescSep).trim();
 			String propDesc = nextLine.substring(nameDescSep + 2);
 
-//			System.out.println("Got property " + propName + " | " + propDesc);
-
 			String flagsLine = in.readLine();
 			if (flagsLine == null)
 				throw new RuntimeException("flags expected");
@@ -168,17 +166,18 @@ public class GstPluginDb {
 			boolean readOnly = !flagsLine.contains("writable");
 
 			// TODO: caps
-			if (propName.equals("caps")) {
-				// read (and ignore atm) the caps, until empty line is detected
-				do {
-					nextLine = in.readLine();
-				} while (nextLine != null && !nextLine.isEmpty());
-				if (nextLine == null) // caps might be the last one in the file
-					break;
-				// current line is empty separator, read next valid one and continue
-				nextLine = in.readLine();
-				continue;
-			}
+//			if (propName.equals("caps")) {
+				
+//				// read (and ignore atm) the caps, until empty line is detected
+//				do {
+//					nextLine = in.readLine();
+//				} while (nextLine != null && !nextLine.isEmpty());
+//				if (nextLine == null) // caps might be the last one in the file
+//					break;
+//				// current line is empty separator, read next valid one and continue
+//				nextLine = in.readLine();
+//				continue;
+//			}
 
 			String typeLine = in.readLine();
 			if (typeLine == null)
@@ -194,7 +193,7 @@ public class GstPluginDb {
 				}
 				elem.addProperty(new GstString(propName, "value", propDesc, readOnly, defVal));
 				elem.addProperty(new GstPipelineProperty(propName, "pipeline properties", propDesc, readOnly, false));
-			} else if (typeTok[0].equals("Object")) {
+			} else if (typeTok[0].equals("Object")||typeTok[0].equals("Boxed") || typeTok[0].equals("Caps")) {
 				elem.addProperty(new GstString(propName, "value", propDesc, readOnly, "null"));
 				elem.addProperty(new GstPipelineProperty(propName, "pipeline properties", propDesc, readOnly, false));
 			} else if (typeTok[0].equals("Boolean.")) {
@@ -291,14 +290,6 @@ public class GstPluginDb {
 				elem.addProperty(new GstEnum(propName, "value", propDesc, readOnly,
 						enumList.indexOf(typeTok[4].replace("\"", "")), enumList));
 				elem.addProperty(new GstPipelineProperty(propName, "pipeline properties", propDesc, readOnly, false));
-
-			} else if (typeTok[0].equals("Boxed") && typeTok[1].equals("pointer")) {
-				String enumValLine = in.readLine().trim();
-				while (enumValLine != null && enumValLine.length() > 0) {
-					if (enumValLine.equals("Element Signals:"))
-						return;
-					enumValLine = in.readLine();
-				}
 			}
 
 			nextLine = in.readLine();
@@ -312,7 +303,7 @@ public class GstPluginDb {
 		BufferedReader in = new BufferedReader(new InputStreamReader(is));
 		GstElement elem = new GstElement(name, plg);
 		String nextLine = "";
-//		System.out.println("Reading from " + plg.getName() + "." + elem.getName());
+		System.out.println("Reading from " + plg.getName() + "." + elem.getName());
 		try {
 			in.readLine(); // skip "Factory Details:"
 			in.readLine(); // skip "Rank"
@@ -331,7 +322,7 @@ public class GstPluginDb {
 
 			plg.addElement(elem);
 		} catch (RuntimeException e) {
-			//e.printStackTrace();
+			e.printStackTrace();
 		} finally {
 			in.close();
 		}
