@@ -157,6 +157,7 @@ public class GstPluginDb {
 			String propName = nextLine.substring(0, nameDescSep).trim();
 			String propDesc = nextLine.substring(nameDescSep + 2);
 
+			System.out.println("Got property " + propName + " | " + propDesc);
 			String flagsLine = in.readLine();
 			if (flagsLine == null)
 				throw new RuntimeException("flags expected");
