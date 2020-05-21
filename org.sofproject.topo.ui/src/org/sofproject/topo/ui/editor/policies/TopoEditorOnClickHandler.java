@@ -150,7 +150,7 @@ public class TopoEditorOnClickHandler extends AbstractHandler implements IOnClic
 				});
 				menu.getItems().add(miSerializeJson);
 
-				MenuItem miSendJson = new MenuItem("Serialize Topology to Json & send to Docker");
+				MenuItem miSendJson = new MenuItem("Serialize Topology to Json & send to Target");
 				JsonUtils jsonUtils = new JsonUtils();
 				IRemoteOpsProvider dockerOpsProv = jsonUtils.getDockerOpsProvider();
 

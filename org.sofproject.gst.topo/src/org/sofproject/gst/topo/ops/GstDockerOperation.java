@@ -33,7 +33,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -91,8 +90,8 @@ public class GstDockerOperation extends SimpleRemoteOp {
 
 			channel.setPty(true); // for ctrl+c sending
 			String command = String.format(
-					"cd  /home/video-analytics/pipelines; mkdir -p %s; cd %s; touch %s; echo \'%s\' > %s",
-					linuxPartPathToJson, linuxPartPathToJson, jsonFileName, currentLine.replace("\"", "\\\""), jsonFileName);
+					"cd /home/video-analytics/pipelines; mkdir -p %s; cd %s; touch %s; echo \'%s\' > %s",
+					linuxPartPathToJson, linuxPartPathToJson, jsonFileName, currentLine, jsonFileName);
 			channel.setCommand(command);
 
 			channel.connect();
