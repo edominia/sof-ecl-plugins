@@ -55,7 +55,7 @@ public class GstDockerOpsProvider implements IRemoteOpsProvider {
 	public String getRemoteOpDisplayName(String opId) {
 		switch (opId) {
 		case SEND_DOCKER:
-			return "Serialize Topology to Json & send to Docker";
+			return "Save & Send to Target";
 		default:
 			return null;
 		}

@@ -125,7 +125,7 @@ public class TopoEditorOnClickHandler extends AbstractHandler implements IOnClic
 					menu.getItems().add(new SeparatorMenuItem());
 				}
 
-				MenuItem miSerialize = new MenuItem("Serialize Topology");
+				MenuItem miSerialize = new MenuItem("Save");
 				miSerialize.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
@@ -140,7 +140,7 @@ public class TopoEditorOnClickHandler extends AbstractHandler implements IOnClic
 
 				menu.getItems().add(new SeparatorMenuItem());
 
-				MenuItem miSerializeJson = new MenuItem("Serialize Topology to Json");
+				MenuItem miSerializeJson = new MenuItem("Save as JSON");
 				miSerializeJson.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
@@ -150,7 +150,7 @@ public class TopoEditorOnClickHandler extends AbstractHandler implements IOnClic
 				});
 				menu.getItems().add(miSerializeJson);
 
-				MenuItem miSendJson = new MenuItem("Serialize Topology to Json & send to Target");
+				MenuItem miSendJson = new MenuItem("Save & Send to Target");
 				JsonUtils jsonUtils = new JsonUtils();
 				IRemoteOpsProvider dockerOpsProv = jsonUtils.getDockerOpsProvider();
 
