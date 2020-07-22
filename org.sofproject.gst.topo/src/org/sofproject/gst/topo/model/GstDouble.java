@@ -35,6 +35,7 @@ public class GstDouble extends GstProperty {
 	private double minValue = 0;
 	private double maxValue = 0;
 	private double defaultValue = 0;
+	private String description = "";
 
 	public GstDouble(String category, String name, String description, boolean readOnly, double minValue,
 			double maxValue, double defaultValue) {
@@ -43,6 +44,7 @@ public class GstDouble extends GstProperty {
 		this.maxValue = maxValue;
 		this.defaultValue = defaultValue;
 		this.value = defaultValue;
+		this.description = description;
 	}
 
 	@Override
@@ -63,8 +65,9 @@ public class GstDouble extends GstProperty {
 	@Override
 	public String getPropertyString(String nodeName) {
 		double propertyValue = ((this.isChanged()) ? value : defaultValue);
-		return "\"" + getCategory() + "\":{\"default\":" + propertyValue + ",\"element\":\"" + nodeName + "\",\"minValue\":" + minValue
-				+ ",\"maxValue\":" + maxValue + ",\"type\":\"float\"},";
+		return "\"" + getCategory() + "\":{\"default\":" + propertyValue + ",\"descriptions\":\"" + description
+				+ "\",\"element\":\"" + nodeName + "\",\"minValue\":" + minValue + ",\"maxValue\":" + maxValue
+				+ ",\"type\":\"float\"},";
 	}
 
 	@Override

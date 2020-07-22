@@ -35,6 +35,7 @@ public class GstEnum extends GstProperty {
 
 	private int value = 0;
 	private int defaultValue = 0;
+	private String description = "";
 	private List<String> values;
 
 	public GstEnum(String category, String name, String description, boolean readOnly, int defaultValue,
@@ -43,6 +44,7 @@ public class GstEnum extends GstProperty {
 		this.values = values;
 		this.defaultValue = defaultValue;
 		this.value = defaultValue;
+		this.description = description;
 	}
 
 	@Override
@@ -64,8 +66,8 @@ public class GstEnum extends GstProperty {
 	public String getPropertyString(String nodeName) {
 		int propertyValue = ((this.isChanged()) ? value : defaultValue);
 		String propertyValueString = values.get(propertyValue);
-		return "\"" + getCategory() + "\":{\"default\":\"" + propertyValueString + "\",\"element\":\"" + nodeName
-				+ "\",\"type\":\"enum\"},";
+		return "\"" + getCategory() + "\":{\"default\":\"" + propertyValueString + "\",\"descriptions\":\""
+				+ description + "\",\"element\":\"" + nodeName + "\",\"type\":\"enum\"},";
 	}
 
 	@Override

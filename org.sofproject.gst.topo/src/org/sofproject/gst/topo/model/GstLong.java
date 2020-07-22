@@ -35,6 +35,7 @@ public class GstLong extends GstProperty {
 	private long minValue = 0;
 	private long maxValue = 0;
 	private long defaultValue = 0;
+	private String description = "";
 
 	public GstLong(String category, String name, String description, boolean readOnly, long minValue, long maxValue,
 			long defaultValue) {
@@ -43,6 +44,7 @@ public class GstLong extends GstProperty {
 		this.maxValue = maxValue;
 		this.defaultValue = defaultValue;
 		this.value = defaultValue;
+		this.description = description;
 	}
 
 	@Override
@@ -64,8 +66,9 @@ public class GstLong extends GstProperty {
 	public String getPropertyString(String nodeName) {
 		long propertyValue = ((this.isChanged()) ? value : defaultValue);
 
-		return "\""+getCategory() + "\":{\"default\":" + propertyValue + ",\"element\":\"" + nodeName + "\",\"minValue\":" + minValue
-				+ ",\"maxValue\":" + maxValue + ",\"type\":\"integer\"},";
+		return "\"" + getCategory() + "\":{\"default\":" + propertyValue + ",\"descriptions\":\"" + description
+				+ "\",\"element\":\"" + nodeName + "\",\"minValue\":" + minValue + ",\"maxValue\":" + maxValue
+				+ ",\"type\":\"integer\"},";
 	}
 
 	@Override

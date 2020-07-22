@@ -35,6 +35,7 @@ public class GstInteger extends GstProperty {
 	private int minValue = 0;
 	private int maxValue = 0;
 	private int defaultValue = 0;
+	private String description = "";
 
 	public GstInteger(String category, String name, String description, boolean readOnly, int minValue, int maxValue,
 			int defaultValue) {
@@ -43,6 +44,7 @@ public class GstInteger extends GstProperty {
 		this.maxValue = maxValue;
 		this.defaultValue = defaultValue;
 		this.value = defaultValue;
+		this.description = description;
 	}
 
 	@Override
@@ -64,8 +66,9 @@ public class GstInteger extends GstProperty {
 	public String getPropertyString(String nodeName) {
 		int propertyValue = ((this.isChanged()) ? value : defaultValue);
 
-		return "\""+getCategory() + "\":{\"default\":" + propertyValue + ",\"element\":\"" + nodeName + "\",\"minValue\":" + minValue
-				+ ",\"maxValue\":" + maxValue + ",\"type\":\"integer\"},";
+		return "\"" + getCategory() + "\":{\"default\":" + propertyValue + ",\"descriptions\":\"" + description
+				+ "\",\"element\":\"" + nodeName + "\",\"minValue\":" + minValue + ",\"maxValue\":" + maxValue
+				+ ",\"type\":\"integer\"},";
 	}
 
 	@Override

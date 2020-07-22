@@ -37,14 +37,16 @@ public class GstBigInt extends GstProperty {
 	private BigInteger minValue;
 	private BigInteger maxValue;
 	private BigInteger defaultValue;
+	private String description = "";
 
-	public GstBigInt(String category, String name, String description, boolean readOnly, BigInteger minValue, BigInteger maxValue,
-			BigInteger defaultValue) {
+	public GstBigInt(String category, String name, String description, boolean readOnly, BigInteger minValue,
+			BigInteger maxValue, BigInteger defaultValue) {
 		super(category, name, description, readOnly);
 		this.minValue = minValue;
 		this.maxValue = maxValue;
 		this.defaultValue = defaultValue;
 		this.value = defaultValue;
+		this.description = description;
 	}
 
 	@Override
@@ -66,8 +68,9 @@ public class GstBigInt extends GstProperty {
 	public String getPropertyString(String nodeName) {
 		BigInteger propertyValue = ((this.isChanged()) ? value : defaultValue);
 
-		return "\""+getCategory() + "\":{\"default\":" + propertyValue + ",\"element\":\"" + nodeName + "\",\"minValue\":" + minValue
-				+ ",\"maxValue\":" + maxValue + ",\"type\":\"integer\"},";
+		return "\"" + getCategory() + "\":{\"default\":" + propertyValue + ",\"descriptions\":\"" + description
+				+ "\",\"element\":\"" + nodeName + "\",\"minValue\":" + minValue + ",\"maxValue\":" + maxValue
+				+ ",\"type\":\"integer\"},";
 	}
 
 	@Override

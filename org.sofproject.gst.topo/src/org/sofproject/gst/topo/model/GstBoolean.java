@@ -33,11 +33,13 @@ public class GstBoolean extends GstProperty {
 
 	private boolean value = false;
 	private boolean defaultValue = false;
+	private String description = "";
 
 	public GstBoolean(String category, String name, String description, boolean readOnly, boolean defaultValue) {
 		super(category, name, description, readOnly);
 		this.defaultValue = defaultValue;
 		this.value = defaultValue;
+		this.description = description;
 	}
 
 	@Override
@@ -58,7 +60,8 @@ public class GstBoolean extends GstProperty {
 	@Override
 	public String getPropertyString(String nodeName) {
 		boolean propertyValue = ((this.isChanged()) ? value : defaultValue);
-		return "\""+getCategory() + "\":{\"default\":" + propertyValue + ",\"element\":\"" + nodeName + "\",\"type\":\"boolean\"},";
+		return "\"" + getCategory() + "\":{\"default\":" + propertyValue + ",\"descriptions\":\"" + description
+				+ "\",\"element\":\"" + nodeName + "\",\"type\":\"boolean\"},";
 	}
 
 	@Override

@@ -33,11 +33,13 @@ public class GstString extends GstProperty {
 
 	private String value = "";
 	private String defaultValue = "";
+	private String description = "";
 
 	public GstString(String category, String name, String description, boolean readOnly, String defaultValue) {
 		super(category, name, description, readOnly);
 		this.defaultValue = defaultValue;
 		this.value = defaultValue;
+		this.description = description;
 	}
 
 	@Override
@@ -58,12 +60,12 @@ public class GstString extends GstProperty {
 	@Override
 	public String getPropertyString(String nodeName) {
 		String propertyValue = ((this.isChanged()) ? value : defaultValue);
-		if(propertyValue=="null") {
-			return "\"" + getCategory() + "\":{\"element\":\"" + nodeName
-					+ "\",\"type\":\"string\"},";
-		}else {
-			return "\"" + getCategory() + "\":{\"default\":\"" + propertyValue + "\",\"element\":\"" + nodeName
-					+ "\",\"type\":\"string\"},";
+		if (propertyValue == "null") {
+			return "\"" + getCategory() + "\":{\"element\":\"" + nodeName + "\",\"descriptions\":\"" + description
+					+ "\", \"type\":\"string\"},";
+		} else {
+			return "\"" + getCategory() + "\":{\"default\":\"" + propertyValue + "\",\"descriptions\":\"" + description
+					+ "\",\"element\":\"" + nodeName + "\",\"type\":\"string\"},";
 		}
 	}
 
