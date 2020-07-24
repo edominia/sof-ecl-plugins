@@ -31,12 +31,12 @@ package org.sofproject.gst.topo.ops;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.sofproject.core.AudioDevNodeProject;
 import org.sofproject.core.connection.AudioDevNodeConnection;
 import org.sofproject.core.ops.SimpleRemoteOp;
@@ -44,7 +44,6 @@ import org.sofproject.topo.ui.json.PipelineJsonProperty;
 import org.sofproject.topo.ui.json.JsonUtils;
 
 import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
 public class GstDockerOperation extends SimpleRemoteOp {
@@ -62,11 +61,12 @@ public class GstDockerOperation extends SimpleRemoteOp {
 	}
 
 	@Override
-	public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+	public void run(IProgressMonitor monitor) {
 		monitor.beginTask("Sending json to docker", 100);
 
 		try {
 			if (!conn.isConnected()) {
+				MessageDialog.openError(null, "Exception occured", "Node not connected");
 				throw new InvocationTargetException(new IllegalStateException("Node not connected"));
 			}
 
@@ -101,8 +101,9 @@ public class GstDockerOperation extends SimpleRemoteOp {
 			channel.disconnect();
 			monitor.beginTask("Sending json to docker", 1000);
 
-		} catch (JSchException | IOException e) {
-			throw new InvocationTargetException(e);
+		} catch (Exception e) {
+			MessageDialog.openError(null, "Exception occured", e.getMessage());
+			e.printStackTrace();
 		}
 	}
 

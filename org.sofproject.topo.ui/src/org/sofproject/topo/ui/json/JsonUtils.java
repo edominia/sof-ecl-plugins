@@ -32,13 +32,12 @@ package org.sofproject.topo.ui.json;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.Paths;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
@@ -53,8 +52,7 @@ public class JsonUtils {
 
 	PipelineJsonProperty jsonProperty_;
 
-	public void serializeJson(PipelineJsonProperty jsonProperty, String pipelineString, String pipelinePropertyString)
-			throws CoreException, IOException {
+	public void serializeJson(PipelineJsonProperty jsonProperty, String pipelineString, String pipelinePropertyString) {
 		try {
 			String projectPath = getProjectPath();
 			File file;
@@ -82,7 +80,8 @@ public class JsonUtils {
 			writer.close();
 
 		} catch (Exception e) {
-			System.out.println(e.toString());
+			MessageDialog.openError(null, "Exception occured", e.getMessage());
+			e.printStackTrace();
 		}
 	}
 

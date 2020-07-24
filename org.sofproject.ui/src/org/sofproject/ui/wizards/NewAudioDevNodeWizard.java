@@ -37,6 +37,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -75,6 +76,7 @@ public class NewAudioDevNodeWizard extends Wizard implements INewWizard {
 					addPage(pageProvider.createNewPage(ext));
 				}
 			} catch (CoreException e) {
+				MessageDialog.openError(null, "Exception occured", e.getMessage());
 				e.printStackTrace();
 			}
 		}

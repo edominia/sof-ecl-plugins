@@ -39,6 +39,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -150,6 +151,7 @@ public class AudioDevNodeConnectionsViewPart extends ViewPart {
 					opsProviders.add((IRemoteOpsProvider) provider);
 				}
 			} catch (CoreException e) {
+				MessageDialog.openError(null, "Exception occured", e.getMessage());
 				e.printStackTrace();
 			}
 		}

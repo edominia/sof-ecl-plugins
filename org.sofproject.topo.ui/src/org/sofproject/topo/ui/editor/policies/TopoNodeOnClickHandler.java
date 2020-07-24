@@ -43,6 +43,7 @@ import org.eclipse.gef.mvc.fx.policies.DeletionPolicy;
 import org.eclipse.gef.mvc.fx.viewer.IViewer;
 import org.eclipse.gef.mvc.fx.viewer.InfiniteCanvasViewer;
 import org.eclipse.gef.zest.fx.parts.EdgePart;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.sofproject.topo.ui.graph.GefTopoEdge;
 import org.sofproject.topo.ui.graph.GefTopoNode;
@@ -161,7 +162,7 @@ public class TopoNodeOnClickHandler extends AbstractHandler implements IOnClickH
 						creationPolicy.create(conn, part, HashMultimap.<IContentPart<? extends Node>, String>create());
 						creationPolicy.commit();
 					} catch (RuntimeException e1) {
-						// TODO: display error message in a message box
+						MessageDialog.openError(null, "Exception occured", e1.getMessage());
 						e1.printStackTrace();
 					}
 					break;

@@ -42,6 +42,7 @@ import org.eclipse.gef.mvc.fx.parts.IVisualPart;
 import org.eclipse.gef.mvc.fx.policies.CreationPolicy;
 import org.eclipse.gef.mvc.fx.viewer.IViewer;
 import org.eclipse.gef.mvc.fx.viewer.InfiniteCanvasViewer;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
@@ -132,7 +133,8 @@ public class TopoEditorOnClickHandler extends AbstractHandler implements IOnClic
 						try {
 							getGraphFromHost().serialize();
 						} catch (CoreException | IOException e) {
-							e.printStackTrace(); // TODO:
+							MessageDialog.openError(null, "Exception occured", e.getMessage());
+							e.printStackTrace();
 						}
 					}
 				});

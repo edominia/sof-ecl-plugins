@@ -48,6 +48,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.sofproject.gst.topo.model.GstBigInt;
 import org.sofproject.gst.topo.model.GstBoolean;
 import org.sofproject.gst.topo.model.GstDouble;
@@ -112,7 +113,8 @@ public class GstPluginDb {
 			}
 			createFlatElementList();
 		} catch (CoreException e) {
-			// TODO: handle this core exception
+			//TODO: handle this core exception
+			MessageDialog.openError(null, "Exception occured", e.getMessage());
 			e.printStackTrace();
 		}
 	}

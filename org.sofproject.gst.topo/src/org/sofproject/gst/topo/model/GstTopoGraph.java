@@ -48,6 +48,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.sofproject.core.binfile.BinFile;
 import org.sofproject.core.ops.IRemoteOpsProvider;
@@ -206,6 +207,7 @@ public class GstTopoGraph implements ITopoGraph {
 
 			return os.toString();
 		} catch (IOException e) {
+			MessageDialog.openError(null, "Exception occured", e.getMessage());
 			e.printStackTrace();
 			return null;
 		}
@@ -227,6 +229,7 @@ public class GstTopoGraph implements ITopoGraph {
 
 			return os.toString();
 		} catch (IOException e) {
+			MessageDialog.openError(null, "Exception occured", e.getMessage());
 			e.printStackTrace();
 			return null;
 		}

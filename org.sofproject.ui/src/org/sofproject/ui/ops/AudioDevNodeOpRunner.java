@@ -88,8 +88,10 @@ public class AudioDevNodeOpRunner {
 			});
 		} catch (CoreException | InvocationTargetException e) {
 			MessageDialog.openError(null, "Operation failed: ", e.getMessage());
+			e.printStackTrace();
 		} catch (InterruptedException e) {
 			MessageDialog.openInformation(null, "Operation canceled", "Operation canceled");
+			e.printStackTrace();
 		}
 
 	}

@@ -29,9 +29,7 @@
 
 package org.sofproject.topo.ui.json;
 
-import java.io.IOException;
-
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -111,7 +109,7 @@ public class JsonCustomOptionPane {
 		okButton.addSelectionListener(new SelectionAdapter() {
 
 			@Override
-			public void widgetSelected(SelectionEvent e) {
+			public void widgetSelected(SelectionEvent event) {
 				if (nameText.getText().isEmpty()) {
 					MessageBox messageBox = new MessageBox(shell, SWT.ERROR);
 					messageBox.setMessage("Name cannot be empty!");
@@ -125,12 +123,12 @@ public class JsonCustomOptionPane {
 						PipelineJsonProperty jsonProperty = new PipelineJsonProperty(nameText.getText(),
 								descriptionText.getText(), versionText.getText(),
 								typeCombo.getItem(typeCombo.getSelectionIndex()));
-
 						jsonUtils.serializeJson(jsonProperty, graph.getPipelineString(),
 								graph.getPipelinePropertiesString());
 						shell.close();
-					} catch (CoreException | IOException error) {
-						error.printStackTrace(); // TODO:
+					} catch (Exception e) {
+						MessageDialog.openError(null, "Exception occured", e.getMessage());
+						e.printStackTrace();
 					}
 				}
 			}

@@ -34,6 +34,7 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.sofproject.core.AudioDevNodeProject;
 import org.sofproject.core.connection.AudioDevNodeConnection;
 import org.sofproject.core.ops.SimpleRemoteOp;
@@ -65,6 +66,7 @@ public class GstTopoTestOperation extends SimpleRemoteOp {
 
 		try {
 			if (!conn.isConnected()) {
+				MessageDialog.openError(null, "Exception occured", "Node not connected");
 				throw new InvocationTargetException(new IllegalStateException("Node not connected"));
 			}
 
@@ -98,6 +100,7 @@ public class GstTopoTestOperation extends SimpleRemoteOp {
 						os.write(3);
 						os.flush();
 					} catch (Exception e) {
+						MessageDialog.openError(null, "Exception occured", e.getMessage());
 						e.printStackTrace();
 					}
 					channel.disconnect();
@@ -107,7 +110,8 @@ public class GstTopoTestOperation extends SimpleRemoteOp {
 			channel.disconnect();
 
 		} catch (JSchException | IOException e) {
-			throw new InvocationTargetException(e);
+			MessageDialog.openError(null, "Exception occured", e.getMessage());
+			e.printStackTrace();
 		}
 	}
 

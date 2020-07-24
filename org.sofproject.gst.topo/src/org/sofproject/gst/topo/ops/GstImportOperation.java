@@ -40,6 +40,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.sofproject.core.AudioDevNodeProject;
 import org.sofproject.core.connection.AudioDevNodeConnection;
 import org.sofproject.core.ops.SimpleRemoteOp;
@@ -167,6 +168,7 @@ public class GstImportOperation extends SimpleRemoteOp {
 			}
 
 		} catch (JSchException | IOException | CoreException e) {
+			MessageDialog.openError(null, "Exception occured", e.getMessage());
 			throw new InvocationTargetException(e);
 		}
 	}
