@@ -34,17 +34,22 @@ import java.io.FileReader;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Vector;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.sofproject.core.AudioDevNodeProject;
 import org.sofproject.core.connection.AudioDevNodeConnection;
 import org.sofproject.core.ops.SimpleRemoteOp;
 import org.sofproject.topo.ui.json.PipelineJsonProperty;
 import org.sofproject.topo.ui.json.JsonUtils;
 
+import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 
 public class GstDockerOperation extends SimpleRemoteOp {
 
@@ -62,10 +67,13 @@ public class GstDockerOperation extends SimpleRemoteOp {
 
 	@Override
 	public void run(IProgressMonitor monitor) {
-		monitor.beginTask("Sending json to docker", 100);
+		int workload = 0;
+
+		monitor.beginTask("Sending json to docker", workload);
 
 		try {
 			if (!conn.isConnected()) {
+				monitor.done();
 				MessageDialog.openError(null, "Exception occured", "Node not connected");
 				throw new InvocationTargetException(new IllegalStateException("Node not connected"));
 			}
@@ -77,12 +85,17 @@ public class GstDockerOperation extends SimpleRemoteOp {
 			ChannelExec channel = (ChannelExec) session.openChannel("exec");
 			channel.setInputStream(null);
 
+			monitor.worked(1);
+
 			String jsonFileName = "pipeline.json";
 			String projectPath = proj.getProject().getLocation().toString();
-			Path partPathToJson = Paths.get(jsonProperty.getType().toLowerCase(), jsonProperty.getName(), jsonProperty.getVersion());
+			Path partPathToJson = Paths.get(jsonProperty.getType().toLowerCase(), jsonProperty.getName(),
+					jsonProperty.getVersion());
 			Path fullPathToJson = Paths.get(projectPath, partPathToJson.toString(), jsonFileName);
 			String linuxPartPathToJson = partPathToJson.toString();
 			linuxPartPathToJson = linuxPartPathToJson.replace("\\", "/");
+
+			monitor.worked(1);
 
 			BufferedReader reader = new BufferedReader(new FileReader(fullPathToJson.toString()));
 			String currentLine = reader.readLine();
@@ -98,13 +111,48 @@ public class GstDockerOperation extends SimpleRemoteOp {
 
 			while (!channel.isEOF())
 				;
+
 			channel.disconnect();
-			monitor.beginTask("Sending json to docker", 1000);
+
+			Channel channel2 = session.openChannel("sftp");
+			channel2.connect();
+			ChannelSftp channelSftp = (ChannelSftp) channel2;
+
+			if (exists(channelSftp,
+					String.format("/home/video-analytics/pipelines/%s/%s", linuxPartPathToJson, jsonFileName))) {
+				Display.getDefault().syncExec(new Runnable() {
+					@Override
+					public void run() {
+						MessageDialog.openInformation(null, "Success", "File saved and sent succesfully");
+					}
+				});
+			}
+
+			channelSftp.disconnect();
+			channel2.disconnect();
+
+			monitor.done();
 
 		} catch (Exception e) {
 			MessageDialog.openError(null, "Exception occured", e.getMessage());
 			e.printStackTrace();
 		}
+	}
+
+	private static boolean exists(ChannelSftp channelSftp, String path) {
+		Vector res = null;
+		try {
+			res = channelSftp.ls(path);
+		} catch (SftpException e) {
+			if (e.id == ChannelSftp.SSH_FX_NO_SUCH_FILE) {
+				return false;
+			}
+
+			MessageDialog.openError(null, "Exception occured",
+					String.format("Unexpected exception during ls files on sftp: [{%s}:{%s}]", e.id, e.getMessage()));
+			e.printStackTrace();
+		}
+		return res != null && !res.isEmpty();
 	}
 
 }
