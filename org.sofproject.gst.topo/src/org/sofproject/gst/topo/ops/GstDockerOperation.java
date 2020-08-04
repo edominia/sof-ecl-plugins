@@ -45,7 +45,6 @@ import org.sofproject.core.ops.SimpleRemoteOp;
 import org.sofproject.topo.ui.json.PipelineJsonProperty;
 import org.sofproject.topo.ui.json.JsonUtils;
 
-import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.Session;
@@ -82,8 +81,8 @@ public class GstDockerOperation extends SimpleRemoteOp {
 
 			AudioDevNodeProject proj = conn.getProject();
 			Session session = conn.getSession();
-			ChannelExec channel = (ChannelExec) session.openChannel("exec");
-			channel.setInputStream(null);
+			ChannelExec channelExec = (ChannelExec) session.openChannel("exec");
+			channelExec.setInputStream(null);
 
 			monitor.worked(1);
 
@@ -97,28 +96,46 @@ public class GstDockerOperation extends SimpleRemoteOp {
 
 			monitor.worked(1);
 
+			ChannelSftp channelSftp = (ChannelSftp) session.openChannel("sftp");
+			channelSftp.connect();
+
+			if (exists(channelSftp,
+					String.format("/home/video-analytics/pipelines/%s/%s", linuxPartPathToJson, jsonFileName))) {
+				Display.getDefault().syncExec(new Runnable() {
+					@Override
+					public void run() {
+						MessageDialog.openWarning(null, "Warning",
+								"File with same name and version exists - please save file with a new version");
+					}
+				});
+
+				return;
+			}
+
+			channelSftp.disconnect();
+
+			monitor.worked(1);
+
 			BufferedReader reader = new BufferedReader(new FileReader(fullPathToJson.toString()));
 			String currentLine = reader.readLine();
 			reader.close();
 
-			channel.setPty(true); // for ctrl+c sending
+			channelExec.setPty(true); // for ctrl+c sending
 			String command = String.format(
 					"cd /home/video-analytics/pipelines; mkdir -p %s; cd %s; touch %s; echo \'%s\' > %s",
 					linuxPartPathToJson, linuxPartPathToJson, jsonFileName, currentLine, jsonFileName);
-			channel.setCommand(command);
+			channelExec.setCommand(command);
 
-			channel.connect();
+			channelExec.connect();
 
-			while (!channel.isEOF())
+			while (!channelExec.isEOF())
 				;
 
-			channel.disconnect();
+			channelExec.disconnect();
 
-			Channel channel2 = session.openChannel("sftp");
-			channel2.connect();
-			ChannelSftp channelSftp = (ChannelSftp) channel2;
-
-			if (exists(channelSftp,
+			ChannelSftp channelSftp2 = (ChannelSftp) session.openChannel("sftp");
+			channelSftp2.connect();
+			if (exists(channelSftp2,
 					String.format("/home/video-analytics/pipelines/%s/%s", linuxPartPathToJson, jsonFileName))) {
 				Display.getDefault().syncExec(new Runnable() {
 					@Override
@@ -128,8 +145,7 @@ public class GstDockerOperation extends SimpleRemoteOp {
 				});
 			}
 
-			channelSftp.disconnect();
-			channel2.disconnect();
+			channelSftp2.disconnect();
 
 			monitor.done();
 
