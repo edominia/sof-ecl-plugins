@@ -39,6 +39,7 @@ import org.eclipse.gef.graph.Graph;
 import org.eclipse.gef.mvc.fx.ui.MvcFxUiModule;
 import org.eclipse.gef.mvc.fx.ui.parts.AbstractFXEditor;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
@@ -92,7 +93,12 @@ public class TopoEditor extends AbstractFXEditor implements IBinFileEditor {
 		try {
 			super.init(site, input);
 		} catch (PartInitException e1) {
-			MessageDialog.openError(null, "Exception occured", e1.getMessage());
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					MessageDialog.openError(null, "Exception occured", e1.getMessage());
+				}
+			});
 			e1.printStackTrace();
 		}
 
@@ -114,7 +120,12 @@ public class TopoEditor extends AbstractFXEditor implements IBinFileEditor {
 				}
 
 			} catch (CoreException |IOException e) {
-				MessageDialog.openError(null, "Exception occured", e.getMessage());
+				Display.getDefault().syncExec(new Runnable() {
+					@Override
+					public void run() {
+						MessageDialog.openError(null, "Exception occured", e.getMessage());
+					}
+				});
 				e.printStackTrace();
 			}
 		}
@@ -129,7 +140,12 @@ public class TopoEditor extends AbstractFXEditor implements IBinFileEditor {
 		try {
 			topoModel.serialize();
 		} catch (CoreException | IOException e) {
-			MessageDialog.openError(null, "Exception occured", e.getMessage());
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					MessageDialog.openError(null, "Exception occured", e.getMessage());
+				}
+			});
 			e.printStackTrace();
 		}
 	}

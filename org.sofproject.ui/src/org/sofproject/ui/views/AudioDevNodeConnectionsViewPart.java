@@ -151,7 +151,12 @@ public class AudioDevNodeConnectionsViewPart extends ViewPart {
 					opsProviders.add((IRemoteOpsProvider) provider);
 				}
 			} catch (CoreException e) {
-				MessageDialog.openError(null, "Exception occured", e.getMessage());
+				Display.getDefault().syncExec(new Runnable() {
+					@Override
+					public void run() {
+						MessageDialog.openError(null, "Exception occured", e.getMessage());
+					}
+				});
 				e.printStackTrace();
 			}
 		}

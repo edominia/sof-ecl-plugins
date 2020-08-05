@@ -34,11 +34,8 @@ import java.beans.PropertyChangeSupport;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +47,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Display;
 import org.sofproject.core.binfile.BinFile;
 import org.sofproject.core.ops.IRemoteOpsProvider;
 import org.sofproject.gst.topo.ops.GstGraphOpsProvider;
@@ -207,7 +205,12 @@ public class GstTopoGraph implements ITopoGraph {
 
 			return os.toString();
 		} catch (IOException e) {
-			MessageDialog.openError(null, "Exception occured", e.getMessage());
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					MessageDialog.openError(null, "Exception occured", e.getMessage());
+				}
+			});
 			e.printStackTrace();
 			return null;
 		}
@@ -229,7 +232,12 @@ public class GstTopoGraph implements ITopoGraph {
 
 			return os.toString();
 		} catch (IOException e) {
-			MessageDialog.openError(null, "Exception occured", e.getMessage());
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					MessageDialog.openError(null, "Exception occured", e.getMessage());
+				}
+			});
 			e.printStackTrace();
 			return null;
 		}

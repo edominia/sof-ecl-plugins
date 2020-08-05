@@ -162,7 +162,17 @@ public class TopoNodeOnClickHandler extends AbstractHandler implements IOnClickH
 						creationPolicy.create(conn, part, HashMultimap.<IContentPart<? extends Node>, String>create());
 						creationPolicy.commit();
 					} catch (RuntimeException e1) {
-						MessageDialog.openError(null, "Exception occured", e1.getMessage());
+						Display.getDefault().syncExec(new Runnable() {
+							@Override
+							public void run() {
+								Display.getDefault().syncExec(new Runnable() {
+									@Override
+									public void run() {
+										MessageDialog.openError(null, "Exception occured", e1.getMessage());
+									}
+								});
+							}
+						});
 						e1.printStackTrace();
 					}
 					break;

@@ -37,6 +37,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Display;
 import org.sofproject.core.AudioDevNodeProject;
 import org.sofproject.core.connection.AudioDevNodeConnection;
 import org.sofproject.core.ops.IRemoteOp;
@@ -87,10 +88,20 @@ public class AudioDevNodeOpRunner {
 				}
 			});
 		} catch (CoreException | InvocationTargetException e) {
-			MessageDialog.openError(null, "Operation failed: ", e.getMessage());
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					MessageDialog.openError(null, "Operation failed: ", e.getMessage());
+				}
+			});
 			e.printStackTrace();
 		} catch (InterruptedException e) {
-			MessageDialog.openInformation(null, "Operation canceled", "Operation canceled");
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					MessageDialog.openInformation(null, "Operation canceled", "Operation canceled");
+				}
+			});
 			e.printStackTrace();
 		}
 
