@@ -38,6 +38,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.widgets.Display;
 import org.sofproject.gst.topo.plugins.GstPluginDb;
 import org.sofproject.topo.ui.graph.ITopoFactory;
 import org.sofproject.topo.ui.graph.ITopoGraph;
@@ -57,7 +58,12 @@ public class GstTopoFactory implements ITopoFactory {
 				}
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
-			MessageDialog.openError(null, "Exception occured", e.getMessage());
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					MessageDialog.openError(null, "Exception occured", e.getMessage());
+				}
+			});
 			e.printStackTrace();
 		}
 		GstTopoGraph graph = new GstTopoGraph(file, pdb);

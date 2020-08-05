@@ -42,6 +42,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkingSet;
@@ -76,7 +77,17 @@ public class NewAudioDevNodeWizard extends Wizard implements INewWizard {
 					addPage(pageProvider.createNewPage(ext));
 				}
 			} catch (CoreException e) {
-				MessageDialog.openError(null, "Exception occured", e.getMessage());
+				Display.getDefault().syncExec(new Runnable() {
+					@Override
+					public void run() {
+						Display.getDefault().syncExec(new Runnable() {
+							@Override
+							public void run() {
+								MessageDialog.openError(null, "Exception occured", e.getMessage());
+							}
+						});
+					}
+				});
 				e.printStackTrace();
 			}
 		}

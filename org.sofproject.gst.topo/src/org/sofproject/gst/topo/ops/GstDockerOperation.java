@@ -73,7 +73,12 @@ public class GstDockerOperation extends SimpleRemoteOp {
 		try {
 			if (!conn.isConnected()) {
 				monitor.done();
-				MessageDialog.openError(null, "Exception occured", "Node not connected");
+				Display.getDefault().syncExec(new Runnable() {
+					@Override
+					public void run() {
+						MessageDialog.openError(null, "Exception occured", "Node not connected");
+					}
+				});
 				throw new InvocationTargetException(new IllegalStateException("Node not connected"));
 			}
 
@@ -150,7 +155,12 @@ public class GstDockerOperation extends SimpleRemoteOp {
 			monitor.done();
 
 		} catch (Exception e) {
-			MessageDialog.openError(null, "Exception occured", e.getMessage());
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					MessageDialog.openError(null, "Exception occured", e.getMessage());
+				}
+			});
 			e.printStackTrace();
 		}
 	}
@@ -164,8 +174,13 @@ public class GstDockerOperation extends SimpleRemoteOp {
 				return false;
 			}
 
-			MessageDialog.openError(null, "Exception occured",
-					String.format("Unexpected exception during ls files on sftp: [{%s}:{%s}]", e.id, e.getMessage()));
+			Display.getDefault().syncExec(new Runnable() {
+				@Override
+				public void run() {
+					MessageDialog.openError(null, "Exception occured", String
+							.format("Unexpected exception during ls files on sftp: [{%s}:{%s}]", e.id, e.getMessage()));
+				}
+			});
 			e.printStackTrace();
 		}
 		return res != null && !res.isEmpty();

@@ -133,7 +133,12 @@ public class TopoEditorOnClickHandler extends AbstractHandler implements IOnClic
 						try {
 							getGraphFromHost().serialize();
 						} catch (CoreException | IOException e) {
-							MessageDialog.openError(null, "Exception occured", e.getMessage());
+							Display.getDefault().syncExec(new Runnable() {
+								@Override
+								public void run() {
+									MessageDialog.openError(null, "Exception occured", e.getMessage());
+								}
+							});
 							e.printStackTrace();
 						}
 					}
