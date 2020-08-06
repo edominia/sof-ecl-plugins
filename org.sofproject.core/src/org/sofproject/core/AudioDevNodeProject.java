@@ -31,6 +31,7 @@ package org.sofproject.core;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -139,5 +140,20 @@ public class AudioDevNodeProject {
 
 		AudioDevNodeConnectionManager.getInstance().createConnection(this);
 		return proj;
+	}
+	
+	@Override
+	public int hashCode() {
+		return proj.getName().hashCode() + address.hashCode() + port;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof AudioDevNodeProject)) {
+			return false;
+		}
+		return Objects.equals(((AudioDevNodeProject) obj).getProject().getName(), this.getProject().getName())
+				&& Objects.equals(((AudioDevNodeProject) obj).getAddress(), this.getAddress()) 
+				&& Objects.equals(((AudioDevNodeProject) obj).getPort(), this.getPort());
 	}
 }
