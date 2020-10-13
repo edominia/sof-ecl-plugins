@@ -87,6 +87,12 @@ public class TopoEditor extends AbstractFXEditor implements IBinFileEditor {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	@Override
+	public void dispose() {
+		serializeGraph();
+		super.dispose();
+	}
 
 	@Override
 	public void init(IEditorSite site, IEditorInput input) {
