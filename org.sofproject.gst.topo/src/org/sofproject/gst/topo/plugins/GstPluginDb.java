@@ -200,6 +200,7 @@ public class GstPluginDb {
 					int eqPos = typeLine.indexOf("\"", bqPos + 1);
 					defVal = typeLine.substring(bqPos + 1, eqPos);
 				}
+
 				elem.addProperty(new GstString(propName, "value", propDesc, readOnly, defVal));
 				elem.addProperty(new GstPipelineProperty(propName, "pipeline properties", propDesc, readOnly, false));
 			} else if (typeTok[0].equals("Object")||typeTok[0].equals("Boxed") || typeTok[0].equals("Caps")) {

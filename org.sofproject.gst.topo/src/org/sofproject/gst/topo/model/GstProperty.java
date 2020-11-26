@@ -107,6 +107,9 @@ public abstract class GstProperty implements ITopoNodeAttribute, Cloneable {
 			writer.write(" ");
 			writer.write(category + "=" + getStringValue());
 		}
+		if (name.equals("pipeline properties")) {
+			writer.write(" pipeline_properties=" + getStringValue());
+		}
 	}
 
 	public void serializePipelineProperties(Writer writer, GstProperty previousProperty, String nodeName)

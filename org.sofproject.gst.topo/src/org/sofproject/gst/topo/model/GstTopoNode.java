@@ -106,11 +106,8 @@ public class GstTopoNode implements ITopoNode {
 		writer.write(elem.getName());
 		for (List<GstProperty> prop : properties.values()) {
 			for (GstProperty gstProperty : prop) {
-				if (!gstProperty.isChanged())
-					continue;
 				gstProperty.serialize(writer);
-			}
-
+			}			
 		}
 	}
 
