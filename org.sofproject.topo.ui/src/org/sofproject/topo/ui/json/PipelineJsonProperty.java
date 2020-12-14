@@ -29,6 +29,10 @@
 
 package org.sofproject.topo.ui.json;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -39,7 +43,7 @@ public class PipelineJsonProperty {
 	private String description;
 	private String version;
 	private String type;
-	private String template;
+	private List<String> template;
 	private Parameters parameters;
 
 	public PipelineJsonProperty(String name, String description, String version, String type) {
@@ -47,8 +51,18 @@ public class PipelineJsonProperty {
 		this.description = description;
 		this.version = version;
 		this.type = type;
+		this.template= new ArrayList<String>();
+	}
+	
+	public String getType() {
+		return type;
 	}
 
+	public List<String> getTemplate() {
+		return template;
+	}
+
+	@JsonIgnore
 	public String getName() {
 		return name;
 	}
@@ -56,17 +70,10 @@ public class PipelineJsonProperty {
 	public String getDescription() {
 		return description;
 	}
-
+	
+	@JsonIgnore
 	public String getVersion() {
 		return version;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public String getTemplate() {
-		return template;
 	}
 
 	public Parameters getParameters() {
@@ -74,7 +81,7 @@ public class PipelineJsonProperty {
 	}
 
 	public void setTemplate(String newTemplate) {
-		this.template = newTemplate;
+		this.template.add(newTemplate);
 	}
 
 	public void setParameters(Parameters parameters) {

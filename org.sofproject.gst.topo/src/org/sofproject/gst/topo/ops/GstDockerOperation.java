@@ -93,9 +93,9 @@ public class GstDockerOperation extends SimpleRemoteOp {
 
 			String jsonFileName = "pipeline.json";
 			String projectPath = proj.getProject().getLocation().toString();
-			Path partPathToJson = Paths.get(jsonProperty.getType().toLowerCase(), jsonProperty.getName(),
+			Path partPathToJson = Paths.get(jsonProperty.getName(),
 					jsonProperty.getVersion());
-			Path fullPathToJson = Paths.get(projectPath, partPathToJson.toString(), jsonFileName);
+			Path fullPathToJson = Paths.get(projectPath, jsonProperty.getType().toLowerCase(), partPathToJson.toString(), jsonFileName);
 			String linuxPartPathToJson = partPathToJson.toString();
 			linuxPartPathToJson = linuxPartPathToJson.replace("\\", "/");
 
@@ -105,7 +105,7 @@ public class GstDockerOperation extends SimpleRemoteOp {
 			channelSftp.connect();
 
 			if (exists(channelSftp,
-					String.format("/home/video-analytics/pipelines/%s/%s", linuxPartPathToJson, jsonFileName))) {
+					String.format("/home/video-analytics-serving/pipelines/%s/%s", linuxPartPathToJson, jsonFileName))) {
 				Display.getDefault().syncExec(new Runnable() {
 					@Override
 					public void run() {
@@ -127,7 +127,7 @@ public class GstDockerOperation extends SimpleRemoteOp {
 
 			channelExec.setPty(true); // for ctrl+c sending
 			String command = String.format(
-					"cd /home/video-analytics/pipelines; mkdir -p %s; cd %s; touch %s; echo \'%s\' > %s",
+					"cd /home/video-analytics-serving/pipelines; mkdir -p %s; cd %s; touch %s; echo \'%s\' > %s",
 					linuxPartPathToJson, linuxPartPathToJson, jsonFileName, currentLine, jsonFileName);
 			channelExec.setCommand(command);
 
@@ -141,7 +141,7 @@ public class GstDockerOperation extends SimpleRemoteOp {
 			ChannelSftp channelSftp2 = (ChannelSftp) session.openChannel("sftp");
 			channelSftp2.connect();
 			if (exists(channelSftp2,
-					String.format("/home/video-analytics/pipelines/%s/%s", linuxPartPathToJson, jsonFileName))) {
+					String.format("/home/video-analytics-serving/pipelines/%s/%s", linuxPartPathToJson, jsonFileName))) {
 				Display.getDefault().syncExec(new Runnable() {
 					@Override
 					public void run() {

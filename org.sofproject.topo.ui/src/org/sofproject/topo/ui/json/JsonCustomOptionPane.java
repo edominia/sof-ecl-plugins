@@ -114,11 +114,7 @@ public class JsonCustomOptionPane {
 					MessageBox messageBox = new MessageBox(shell, SWT.ERROR);
 					messageBox.setMessage("Name cannot be empty!");
 					messageBox.open();
-				} else if (!isInteger(versionText.getText())) {
-					MessageBox messageBox = new MessageBox(shell, SWT.ERROR);
-					messageBox.setMessage("Version number should be an integer!");
-					messageBox.open();
-				} else {
+				}else {
 					try {
 						PipelineJsonProperty jsonProperty = new PipelineJsonProperty(nameText.getText(),
 								descriptionText.getText(), versionText.getText(),
